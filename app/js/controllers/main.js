@@ -2,12 +2,12 @@
 'use strict';
 
 angular.module('pokerOnDices.app')
-    .controller('MainController', ['$q', '$timeout', 'GameLogic', function ($q, $timeout, GameLogic) {
+    .controller('MainController', ['$q', '$timeout', '$location', 'GameLogic', function ($q, $timeout, $location, GameLogic) {
         var isRolling = false;
         this.game = GameLogic;
-        this.game.addPlayer('me');
-        this.game.addPlayer('not me');
-        this.game.initDices();
+        if (this.game.players.length == 0 || this.game.dices.length == 0) {
+            $location.path('/');
+        }
 
         this.isRollEnabled = function () {
             var currentPlayerAble = !!this.game.currentPlayer && this.game.currentPlayer.isRollEnabled();
@@ -40,6 +40,7 @@ angular.module('pokerOnDices.app')
             this.game.makeRoll(elements);
             $timeout(function () {
                 isRolling = false;
+                console.log('rolled: [' + _.pluck(self.game.dices, 'value') + ']');
             }, 1000);
         };
 
@@ -54,7 +55,5 @@ angular.module('pokerOnDices.app')
                 !this.game.currentPlayer.results[key] &&
                 !!this.game.currentPlayer.possibleResults[key];
         };
-
-        return this;
     }]);
 

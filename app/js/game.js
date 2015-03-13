@@ -65,6 +65,8 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations'])
         this.currentPlayer = null;
         this.players = [];
         this.dices = [];
+        this.isInitialized = false;
+        this.isDoubleFirstRoll = true;
         this.school = [
             new Combinations.School('1', 1),
             new Combinations.School('2', 2),
@@ -80,22 +82,20 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations'])
             new Combinations.Quad('каре'),
             new Combinations.SmallStreet('малый стрит'),
             new Combinations.BigStreet('большой стрит'),
-/*
-            {title: 'фул хаус'},
-            {title: 'покер'},
-            {title: 'шанс'}
-*/
+            new Combinations.FullHouse('фул хаус'),
+            new Combinations.Poker('покер'),
+            new Combinations.Chance('шанс')
         ];
         this.initDices = function (num) {
             num = num || 5;
             for (var i = 0; i < num; i++) {
                 this.dices.push(new Dice());
             }
-            this.updatePossibleResults();
+            this.isInitialized = true;
         };
         /**
-         * Only for testing purposes
-         * @param num
+         * Used for testing purposes
+         * @param arr
          */
         this.setDiceValues = function (arr) {
             for (var i = 0; i < arr.length; i++) {

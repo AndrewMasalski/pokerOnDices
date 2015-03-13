@@ -16,6 +16,11 @@ describe('common', function () {
         expect(game.currentPlayer.name).toBe('me');
     });
 
+    it('game.combinations', function () {
+        expect(game.school.length).toBe(6);
+        expect(game.combinations.length).toBe(9);
+    });
+
     it('game.initDices()', function () {
         expect(game.dices.length).toBe(5);
     });
@@ -32,6 +37,7 @@ describe('common', function () {
     });
 
     it('initial possibleResults', function () {
+        game.updatePossibleResults();
         expect(game.currentPlayer.schoolPossibleResults[0]).toBe(2);
         expect(game.currentPlayer.possibleResults[1]).toBe(4);
     });
