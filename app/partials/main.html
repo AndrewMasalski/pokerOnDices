@@ -1,0 +1,55 @@
+<div ng-controller="MainController as main">
+
+    <div class="die {{item.num}} {{item.isLocked ? 'locked' : ''}}"
+         rotate-flip="item.isRotating"
+         ng-repeat="item in main.getDices()"
+         ng-click="item.switchLocked()">
+        <span class="dot"></span>
+    </div>
+
+    <div>
+        <div>Result: {{main.getState().result}}</div>
+        <button type="button" class="btn btn-default" ng-disabled="!main.isRollEnabled()" ng-click="main.onRollClick()">
+            {{main.game.rollText()}}
+        </button>
+    </div>
+
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Комбинация</th>
+                <th ng-repeat="player in main.game.players">{{player.name}}</th>
+            </tr>
+            </thead>
+            <tr ng-repeat="(key, comb) in main.getSchool() track by $index">
+                <td>{{comb.title}}</td>
+                <td ng-repeat="player in main.game.players">
+                    <button type="button" class="btn btn-default"
+                            ng-if="main.isSchoolPossible(player, key)"
+                            ng-click="player.setSchoolResult(key)">
+                        {{ player.schoolPossibleResults[key] }}
+                    </button>
+                    <h4 ng-if="player.schoolResults[key]">{{ player.schoolResults[key] }}</h4>
+                </td>
+            </tr>
+            <tr class="info">
+                <td><b>Школа</b></td>
+                <td ng-repeat="player in main.game.players">
+                    <b>{{ player.getSchoolResult() }}</b>
+                </td>
+            </tr>
+            <tr ng-repeat="(key, comb) in main.getCombinations() track by $index">
+                <td>{{comb.title}}</td>
+                <td ng-repeat="player in main.game.players">
+                    <button type="button" class="btn btn-default"
+                            ng-if="main.isPossible(player, key)"
+                            ng-click="player.setResult(key)">
+                        {{ player.possibleResults[key] }}
+                    </button>
+                    <h4 ng-if="player.results[key]">{{ player.results[key] }}</h4>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

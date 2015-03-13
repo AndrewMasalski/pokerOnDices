@@ -1,0 +1,15 @@
+[rotate-flip] {
+    -webkit-transition:transform ease 1s;
+    -moz-transition:transform ease 1s;
+    -o-transition:transform ease 1s;
+    -ms-transition:transform ease 1s;
+    transition:transform ease 1s;
+}
+
+[rotate-flip].rotated {
+    -webkit-transform:rotate(1800deg);
+    -moz-transform:rotate(1800deg);
+    -o-transform:rotate(1800deg);
+    -ms-transform:rotate(1800deg);
+    transform:rotate(1800deg);
+}
