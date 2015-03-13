@@ -1,17 +1,27 @@
 <div ng-controller="MainController as main">
 
-    <div class="die {{item.num}} {{item.isLocked ? 'locked' : ''}}"
-         rotate-flip="item.isRotating"
-         ng-repeat="item in main.getDices()"
-         ng-click="item.switchLocked()">
-        <span class="dot"></span>
-    </div>
-
-    <div>
-        <div>Result: {{main.getState().result}}</div>
-        <button type="button" class="btn btn-default" ng-disabled="!main.isRollEnabled()" ng-click="main.onRollClick()">
-            {{main.game.rollText()}}
-        </button>
+    <div class="row vertical-align">
+        <div class="col-xs-2 col-sm-2 col-md-2">
+            <!--<div>Result: {{main.getState().result}}</div>-->
+            <button type="button" class="btn btn-success btn-lg" ng-disabled="!main.isRollEnabled()"
+                    ng-click="main.onRollClick()">
+                {{main.game.rollText()}}
+            </button>
+        </div>
+        <div class="col-xs-8 col-sm-8 col-md-8">
+            <div class="die {{item.num}} {{item.isLocked ? 'locked' : ''}}"
+                 rotate-flip="item.isRotating"
+                 ng-repeat="item in main.getDices()"
+                 ng-click="item.switchLocked()">
+                <span class="dot"></span>
+            </div>
+        </div>
+        <div class="col-xs-2 col-sm-2 col-md-2">
+            <!--<div>Result: {{main.getState().result}}</div>-->
+            <button type="button" class="btn btn-warning btn-lg pull-right" ng-disabled="true" ng-click="main.setDices()">
+                Set dices
+            </button>
+        </div>
     </div>
 
     <div>
@@ -25,7 +35,7 @@
             <tr ng-repeat="(key, comb) in main.getSchool() track by $index">
                 <td>{{comb.title}}</td>
                 <td ng-repeat="player in main.game.players">
-                    <button type="button" class="btn btn-default"
+                    <button type="button" class="btn btn-default btn-sm"
                             ng-if="main.isSchoolPossible(player, key)"
                             ng-click="player.setSchoolResult(key)">
                         {{ player.schoolPossibleResults[key] }}
@@ -42,10 +52,15 @@
             <tr ng-repeat="(key, comb) in main.getCombinations() track by $index">
                 <td>{{comb.title}}</td>
                 <td ng-repeat="player in main.game.players">
-                    <button type="button" class="btn btn-default"
+                    <button type="button" class="btn btn-default btn-sm"
                             ng-if="main.isPossible(player, key)"
                             ng-click="player.setResult(key)">
                         {{ player.possibleResults[key] }}
+                    </button>
+                    <button class="btn btn-danger btn-sm"
+                            ng-click="main.removeResult(key)"
+                            ng-if="main.canCrossOut(player, key)">
+                        <i class="glyphicon glyphicon-remove"></i>
                     </button>
                     <h4 ng-if="player.results[key]">{{ player.results[key] }}</h4>
                 </td>

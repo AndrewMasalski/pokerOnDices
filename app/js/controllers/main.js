@@ -6,7 +6,10 @@ angular.module('pokerOnDices.app')
         var isRolling = false;
         this.game = GameLogic;
         if (this.game.players.length == 0 || this.game.dices.length == 0) {
-            $location.path('/');
+            //$location.path('/');
+            this.game.addPlayer('me');
+            this.game.addPlayer('not me');
+            this.game.initDices();
         }
 
         this.isRollEnabled = function () {
@@ -45,15 +48,26 @@ angular.module('pokerOnDices.app')
         };
 
         this.isSchoolPossible = function (player, key) {
-            return this.game.currentPlayer == player &&
-                !this.game.currentPlayer.schoolResults[key] &&
-                !!this.game.currentPlayer.schoolPossibleResults[key];
+            return !isRolling
+                && this.game.currentPlayer == player
+                && !player.schoolResults[key]
+                && !!player.schoolPossibleResults[key];
         };
 
         this.isPossible = function (player, key) {
-            return this.game.currentPlayer == player &&
-                !this.game.currentPlayer.results[key] &&
-                !!this.game.currentPlayer.possibleResults[key];
+            return !isRolling
+                && this.game.currentPlayer == player
+                && !player.results[key]
+                && !!player.possibleResults[key];
         };
+
+        this.canCrossOut = function (player, key) {
+            return !isRolling
+                && player.rollsLeft < 3
+                && this.game.currentPlayer == player
+                && !player.results[key];
+                //&& !player.schoolPossibleResults[key];
+        };
+
     }]);
 

@@ -91,6 +91,14 @@ describe('common', function () {
         expect(result).toBe(4);
     });
 
+    it('pair combination from [5, 3, 1, 6, 4]', function () {
+        var pair = new Comb.Pair('pair');
+        expect(pair.title).toBe('pair');
+        game.setDiceValues([5, 3, 1, 6, 4]);
+        var result = pair.getPossibleResult(game.dices);
+        expect(result).toBe(null);
+    });
+
     it('two pair combination 2x3 and 2x6', function () {
         var twoPair = new Comb.TwoPair('two pair');
         expect(twoPair.title).toBe('two pair');

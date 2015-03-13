@@ -42,6 +42,9 @@ angular.module('pokerOnDices.combinations', [])
                         pairValues.push(Number(key));
                     }
                 });
+                if (pairValues.length == 0) {
+                    return null;
+                }
                 return _.max(pairValues) * 2;
             };
 
