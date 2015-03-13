@@ -113,9 +113,38 @@ angular.module('pokerOnDices.combinations', [])
         };
         inherit(QuadCombination, Combination);
 
+        var StreetCombination = function (title, street) {
+            Combination.call(this, title);
+            this.getPossibleResult = function (dices) {
+                var dicesValues = _.map(dices, 'value');
+                //var street = [1, 2, 3, 4, 5];
+                var values = _.intersection(dicesValues, street);
+                if (values.length < 5) {
+                    return null;
+                }
+                return _.reduce(values, function (sum, val) {
+                    return sum + val;
+                }, 0);
+            };
+
+        };
+        inherit(StreetCombination, Combination);
+
+        var SmallStreetCombination = function (title) {
+            StreetCombination.call(this, title, [1, 2, 3, 4, 5]);
+        };
+        inherit(SmallStreetCombination, StreetCombination);
+
+        var BigStreetCombination = function (title) {
+            StreetCombination.call(this, title, [2, 3, 4, 5, 6]);
+        };
+        inherit(BigStreetCombination, StreetCombination);
+
         this.School = SchoolCombination;
         this.Pair = PairCombination;
         this.TwoPair = TwoPairCombination;
         this.Triangle = TriangleCombination;
         this.Quad = QuadCombination;
+        this.SmallStreet = SmallStreetCombination;
+        this.BigStreet = BigStreetCombination;
     });

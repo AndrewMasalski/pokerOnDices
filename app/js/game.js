@@ -78,9 +78,9 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations'])
             new Combinations.TwoPair('две пары'),
             new Combinations.Triangle('треугольник'),
             new Combinations.Quad('каре'),
+            new Combinations.SmallStreet('малый стрит'),
+            new Combinations.BigStreet('большой стрит'),
 /*
-            {title: 'малый стрит'},
-            {title: 'большой стрит'},
             {title: 'фул хаус'},
             {title: 'покер'},
             {title: 'шанс'}
@@ -90,6 +90,16 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations'])
             num = num || 5;
             for (var i = 0; i < num; i++) {
                 this.dices.push(new Dice());
+            }
+            this.updatePossibleResults();
+        };
+        /**
+         * Only for testing purposes
+         * @param num
+         */
+        this.setDiceValues = function (arr) {
+            for (var i = 0; i < arr.length; i++) {
+                this.dices[i].value = arr[i];
             }
             this.updatePossibleResults();
         };
