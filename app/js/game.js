@@ -144,7 +144,7 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
                 this.done = true;
                 this.currentPlayer = null;
             }
-        }
+        };
 
     }]);
 

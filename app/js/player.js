@@ -11,6 +11,7 @@ angular.module('pokerOnDices.player', [])
             this.possibleResults = [];
             this.rollsLeft = 3;
             this.isCurrent = false;
+            this.isChecked = false;
 
             this.isFirstRoll = function () {
                 return this.rollsLeft === 2;
@@ -45,11 +46,11 @@ angular.module('pokerOnDices.player', [])
 
             this.isCompleted = function () {
                 var schoolCompleted = this.schoolResults.length === 6 && _.all(this.schoolResults, function (res) {
-                    return res != null;
+                    return res !== null;
                 });
 
                 var completed = this.results.length === 9 && _.all(this.results, function (res) {
-                    return res != null;
+                    return res !== null;
                 });
                 return schoolCompleted && completed;
             };

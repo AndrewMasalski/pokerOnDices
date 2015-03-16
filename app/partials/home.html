@@ -2,7 +2,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">Игроки</div>
         <ul class="list-group">
-            <li class="list-group-item" ng-repeat="player in home.game.players track by $index"
+            <li class="list-group-item" ng-repeat="player in home.players track by $index"
                 ng-class="{checked: player.checked}">
                 <div>
                     <input type="checkbox" ng-model="player.isChecked">
@@ -29,6 +29,6 @@
         </div>
     </div>
     <button type="button" class="btn btn-success btn-lg" ng-click="home.go('/game')"
-            ng-disabled="home.game.players.length < 2">Start
+            ng-disabled="home.getCheckedPlayers().length < 2">Start
     </button>
 </div>

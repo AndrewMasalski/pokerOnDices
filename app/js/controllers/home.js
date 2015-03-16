@@ -2,11 +2,13 @@
 'use strict';
 
 angular.module('pokerOnDices.app')
-    .controller('HomeController', ['$q', '$timeout', '$location', 'GameLogic', function ($q, $timeout, $location, GameLogic) {
+    .controller('HomeController', ['$q', '$timeout', '$location', 'GameLogic', 'Player', function ($q, $timeout, $location, GameLogic, Player) {
         this.game = GameLogic;
         this.newPlayer = '';
+        this.players = [];
+
         this.addNewPlayer = function () {
-            this.game.addPlayer(this.newPlayer);
+            this.players.push(this.newPlayer);
             this.newPlayer = '';
         };
 
@@ -14,7 +16,17 @@ angular.module('pokerOnDices.app')
             this.game.players.splice(index, 1);
         };
 
+        this.getCheckedPlayers = function () {
+            return _.filter(this.game.players, function (player) {
+                return player.isChecked;
+            });
+        };
+
         this.go = function (path) {
+            var self = this;
+            _.forEach(this.getCheckedPlayers(), function (player) {
+                self.game.addPlayer(player.name);
+            });
             $location.path(path);
         };
 
@@ -24,13 +36,13 @@ angular.module('pokerOnDices.app')
                 'Ратибор', 'Афиноген',
                 'Евгений', 'София', 'Оксана',
                 'Денис', 'Сергей', 'Андрей'
-            ]
+            ];
         };
 
         if (!this.game.isInitialized) {
-            this.game.addPlayer(this.getPlayerNames()[0]);
-            this.game.addPlayer(this.getPlayerNames()[1]);
-            this.game.addPlayer(this.getPlayerNames()[2]);
+            this.players = this.getPlayerNames().map(function (name) {
+                return new Player(name);
+            });
             this.game.initDices();
         }
     }]);

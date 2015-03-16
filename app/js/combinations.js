@@ -143,7 +143,7 @@ angular.module('pokerOnDices.combinations', [])
                 var filtered = [];
                 _.forEach(grouped, function (group) {
                     if (group.length > 1) {
-                        filtered.push(group)
+                        filtered.push(group);
                     }
                 });
                 if (filtered.length < 2) {
