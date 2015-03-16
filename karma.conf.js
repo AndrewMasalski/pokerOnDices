@@ -18,6 +18,8 @@ module.exports = function (config) {
             'app/bower_components/lodash/lodash.js',
             'app/bower_components/angular/angular.js',
             'app/bower_components/angular-mocks/angular-mocks.js',
+            'app/js/player.js',
+            'app/js/dice.js',
             'app/js/combinations.js',
             'app/js/game.js',
             'test/**/*.js'

@@ -16,7 +16,7 @@
         <form ng-submit="home.addNewPlayer()">
             <input class="input-lg" placeholder="новый игрок" ng-model="home.newPlayer"
                    ng-disabled="home.isSaving"
-                   typeahead="name for name in home.playerNames | filter:$viewValue | limitTo:5">
+                   typeahead="name for name in home.getPlayerNames() | filter:$viewValue | limitTo:5">
         </form>
     </div>
     <div class="panel panel-default">

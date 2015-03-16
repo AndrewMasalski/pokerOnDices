@@ -1,20 +1,23 @@
 /* jshint -W097 */
+/* global console */
 'use strict';
 
 angular.module('pokerOnDices.app')
     .controller('MainController', ['$q', '$timeout', '$location', 'GameLogic', function ($q, $timeout, $location, GameLogic) {
         var isRolling = false;
         this.game = GameLogic;
-        if (this.game.players.length == 0 || this.game.dices.length == 0) {
+        if (this.game.players.length === 0 || this.game.dices.length === 0) {
             //$location.path('/');
             this.game.addPlayer('me');
             this.game.addPlayer('not me');
             this.game.initDices();
+            this.game.players[0].isCurrent = true;
         }
 
         this.isRollEnabled = function () {
+            var isDone = this.game.done;
             var currentPlayerAble = !!this.game.currentPlayer && this.game.currentPlayer.isRollEnabled();
-            return !isRolling && currentPlayerAble;
+            return !isDone && !isRolling && currentPlayerAble;
         };
 
         this.getDices = function () {
@@ -29,44 +32,48 @@ angular.module('pokerOnDices.app')
             return this.game.combinations;
         };
 
-        this.getState = function () {
-            return {
-                lockedCount: _.filter(this.getDices(), {isLocked: true}).length,
-                result: this.game.getDicesSum()
-            };
+        this.rollText = function () {
+            var suffix = '';
+            var currentPlayer = this.game.currentPlayer;
+            if (!!currentPlayer) {
+                return currentPlayer.rollsLeft > 0 ? 'Roll (' + currentPlayer.rollsLeft + ')' : 'Pick';
+            }
+            return 'Roll' + suffix;
         };
 
         this.onRollClick = function () {
             var self = this;
             isRolling = true;
-            var elements = angular.element('.die').not('.locked');
-            this.game.makeRoll(elements);
-            $timeout(function () {
-                isRolling = false;
-                console.log('rolled: [' + _.pluck(self.game.dices, 'value') + ']');
-            }, 1000);
+            this.game.makeRoll(1000)
+                .then(function (rolled) {
+                    isRolling = false;
+                    console.log('rolled: [' + _.pluck(rolled, 'value').join(', ') + ']');
+                });
         };
 
+        /* todo: move this to game logic and write unit tests */
         this.isSchoolPossible = function (player, key) {
-            return !isRolling
-                && this.game.currentPlayer == player
-                && !player.schoolResults[key]
-                && !!player.schoolPossibleResults[key];
+            return !isRolling &&
+                this.game.currentPlayer == player &&
+                player.schoolResults[key] == null &&
+                player.schoolPossibleResults[key] != null;
         };
 
+        /* todo: move this to game logic and write unit tests */
         this.isPossible = function (player, key) {
-            return !isRolling
-                && this.game.currentPlayer == player
-                && !player.results[key]
-                && !!player.possibleResults[key];
+            return !isRolling &&
+                this.game.currentPlayer == player &&
+                player.results[key] == null &&
+                player.possibleResults[key] != null;
         };
 
+        /* todo: move this to game logic and write unit tests */
         this.canCrossOut = function (player, key) {
-            return !isRolling
-                && player.rollsLeft < 3
-                && this.game.currentPlayer == player
-                && !player.results[key];
-                //&& !player.schoolPossibleResults[key];
+            return !isRolling &&
+                player.rollsLeft < 3 &&
+                this.game.currentPlayer == player &&
+                player.results[key] == null &&
+                player.possibleResults[key] == null;
         };
 
     }]);

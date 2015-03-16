@@ -42,7 +42,7 @@ angular.module('pokerOnDices.combinations', [])
                         pairValues.push(Number(key));
                     }
                 });
-                if (pairValues.length == 0) {
+                if (pairValues.length === 0) {
                     return null;
                 }
                 return _.max(pairValues) * 2;
@@ -132,13 +132,27 @@ angular.module('pokerOnDices.combinations', [])
             Combination.call(this, title);
             this.getPossibleResult = function (dices) {
                 var isPoker = _.uniq(dices, 'value').length === 1;
+                if (isPoker) {
+                    return _.reduce(dices, function (sum, dice) {
+                        return sum + dice.value;
+                    }, 0);
+                }
                 var grouped = _.groupBy(dices, function (dice) {
                     return dice.value;
                 });
+                var filtered = [];
+                _.forEach(grouped, function (group) {
+                    if (group.length > 1) {
+                        filtered.push(group)
+                    }
+                });
+                if (filtered.length < 2) {
+                    return null;
+                }
                 var keys = _.map(_.keys(grouped), function (key) {
                     return Number(key);
                 });
-                if (keys.length != 2 && !isPoker) {
+                if (keys.length != 2 && !(filtered[0].length == 3 || filtered[1].length == 3)) {
                     return null;
                 }
                 return _.reduce(dices, function (sum, dice) {
@@ -176,7 +190,7 @@ angular.module('pokerOnDices.combinations', [])
                 }
                 return _.reduce(dices, function (sum, dice) {
                     return sum + dice.value;
-                }, 0);
+                }, 50);
             };
         };
         inherit(PokerCombination, Combination);

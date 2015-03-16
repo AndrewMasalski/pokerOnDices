@@ -5,7 +5,7 @@
             <!--<div>Result: {{main.getState().result}}</div>-->
             <button type="button" class="btn btn-success btn-lg" ng-disabled="!main.isRollEnabled()"
                     ng-click="main.onRollClick()">
-                {{main.game.rollText()}}
+                {{main.rollText()}}
             </button>
         </div>
         <div class="col-xs-8 col-sm-8 col-md-8">
@@ -17,52 +17,58 @@
             </div>
         </div>
         <div class="col-xs-2 col-sm-2 col-md-2">
-            <!--<div>Result: {{main.getState().result}}</div>-->
             <button type="button" class="btn btn-warning btn-lg pull-right" ng-disabled="true" ng-click="main.setDices()">
                 Set dices
             </button>
         </div>
     </div>
-
-    <div>
-        <table class="table table-striped">
+    <div class="top17">
+        <table class="table table-responsive">
             <thead>
             <tr>
                 <th>Комбинация</th>
-                <th ng-repeat="player in main.game.players">{{player.name}}</th>
+                <th ng-repeat="player in main.game.players" class="{{player.isCurrent ? 'shadowTop' : ''}}">
+                    {{player.name}}
+                </th>
             </tr>
             </thead>
             <tr ng-repeat="(key, comb) in main.getSchool() track by $index">
-                <td>{{comb.title}}</td>
-                <td ng-repeat="player in main.game.players">
-                    <button type="button" class="btn btn-default btn-sm"
+                <th>{{comb.title}}</th>
+                <td ng-repeat="player in main.game.players" class="{{player.isCurrent ? 'shadow' : ''}}">
+                    <button type="button" class="btn btn-sm" ng-class="player.schoolPossibleResults[key] < 0 ? 'btn-danger' : 'btn-success'"
                             ng-if="main.isSchoolPossible(player, key)"
-                            ng-click="player.setSchoolResult(key)">
+                            ng-click="main.game.pickSchoolResult(key)">
                         {{ player.schoolPossibleResults[key] }}
                     </button>
-                    <h4 ng-if="player.schoolResults[key]">{{ player.schoolResults[key] }}</h4>
+                    <h5 ng-if="player.schoolResults[key] != null">{{ player.schoolResults[key] }}</h5>
                 </td>
             </tr>
             <tr class="info">
-                <td><b>Школа</b></td>
-                <td ng-repeat="player in main.game.players">
-                    <b>{{ player.getSchoolResult() }}</b>
+                <th><b>Школа</b></th>
+                <td ng-repeat="player in main.game.players" class="{{player.isCurrent ? 'shadow' : ''}}">
+                    <h5>{{ player.getSchoolTotal() }}</h5>
                 </td>
             </tr>
             <tr ng-repeat="(key, comb) in main.getCombinations() track by $index">
-                <td>{{comb.title}}</td>
-                <td ng-repeat="player in main.game.players">
+                <th>{{comb.title}}</th>
+                <td ng-repeat="player in main.game.players" class="{{player.isCurrent ? 'shadow' : ''}}">
                     <button type="button" class="btn btn-default btn-sm"
                             ng-if="main.isPossible(player, key)"
-                            ng-click="player.setResult(key)">
+                            ng-click="main.game.pickResult(key)">
                         {{ player.possibleResults[key] }}
                     </button>
                     <button class="btn btn-danger btn-sm"
-                            ng-click="main.removeResult(key)"
+                            ng-click="main.game.crossOut(key)"
                             ng-if="main.canCrossOut(player, key)">
                         <i class="glyphicon glyphicon-remove"></i>
                     </button>
-                    <h4 ng-if="player.results[key]">{{ player.results[key] }}</h4>
+                    <h5 ng-if="player.results[key] != null">{{ player.results[key] }}</h5>
+                </td>
+            </tr>
+            <tr class="info">
+                <td><b>Результат</b></td>
+                <td ng-repeat="player in main.game.players" class="{{player.isCurrent ? 'shadowBtm' : ''}}">
+                    <h5>{{ player.getTotal() }}</h5>
                 </td>
             </tr>
         </table>

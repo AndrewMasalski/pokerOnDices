@@ -14,3 +14,27 @@ a.editable-click {
     justify-content: center; /* Optional, to align inner flex-items
                               horizontally within the column  */
 }
+
+.focus_original {
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3;
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3;
+    outline: rgb(91, 157, 217) auto 5px;
+}
+
+.top5 { margin-top:5px; }
+.top7 { margin-top:7px; }
+.top10 { margin-top:10px; }
+.top15 { margin-top:10px; }
+.top17 { margin-top:17px; }
+.top30 { margin-top:30px; }
+
+.shadow {
+    box-shadow: 10px 0 10px -10px inset, -10px 0 10px -10px inset;
+}
+.shadowTop {
+    box-shadow: 0 10px 10px -10px inset, 10px 0 10px -10px inset, -10px 0 10px -10px inset;
+}
+.shadowBtm {
+    box-shadow: 0 -10px 10px -10px inset, 10px 0 10px -10px inset, -10px 0 10px -10px inset;
+}
