@@ -51,6 +51,7 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
         this.addPlayer = function (name) {
             var player = new Player(name);
             if (this.players.length === 0) {
+                player.isCurrent = true;
                 this.currentPlayer = player;
             }
             this.players.push(player);
@@ -142,6 +143,7 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
                 this.currentPlayer.rollsLeft = 0;
                 this.setDicesLock(true);
                 this.done = true;
+                this.currentPlayer.isCurrent = false;
                 this.currentPlayer = null;
             }
         };

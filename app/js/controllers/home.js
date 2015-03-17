@@ -17,9 +17,10 @@ angular.module('pokerOnDices.app')
         };
 
         this.getCheckedPlayers = function () {
-            return _.filter(this.game.players, function (player) {
+            var filtered = _.filter(this.players, function (player) {
                 return player.isChecked;
             });
+            return filtered;
         };
 
         this.go = function (path) {
@@ -32,10 +33,8 @@ angular.module('pokerOnDices.app')
 
         this.getPlayerNames = function () {
             return [
-                'Сигизмунд', 'Евлампий', 'Гостомысл',
-                'Ратибор', 'Афиноген',
-                'Евгений', 'София', 'Оксана',
-                'Денис', 'Сергей', 'Андрей'
+                'Сигизмунд', 'Евлампий', 'Гостомысл', 'Афиноген',
+                'София', 'Оксана', 'Денис', 'Сергей', 'Андрей'
             ];
         };
 

@@ -55,16 +55,16 @@ angular.module('pokerOnDices.app')
         this.isSchoolPossible = function (player, key) {
             return !isRolling &&
                 this.game.currentPlayer == player &&
-                player.schoolResults[key] === null &&
-                player.schoolPossibleResults[key] !== null;
+                player.schoolResults[key] === undefined &&
+                player.schoolPossibleResults[key] != null;
         };
 
         /* todo: move this to game logic and write unit tests */
         this.isPossible = function (player, key) {
             return !isRolling &&
                 this.game.currentPlayer == player &&
-                player.results[key] === null &&
-                player.possibleResults[key] !== null;
+                player.results[key] === undefined &&
+                player.possibleResults[key] != null;
         };
 
         /* todo: move this to game logic and write unit tests */
@@ -72,7 +72,7 @@ angular.module('pokerOnDices.app')
             return !isRolling &&
                 player.rollsLeft < 3 &&
                 this.game.currentPlayer == player &&
-                player.results[key] === null &&
+                player.results[key] === undefined &&
                 player.possibleResults[key] === null;
         };
 

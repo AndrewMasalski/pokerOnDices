@@ -3,7 +3,7 @@
         <div class="panel-heading">Игроки</div>
         <ul class="list-group">
             <li class="list-group-item" ng-repeat="player in home.players track by $index"
-                ng-class="{checked: player.checked}">
+                ng-class="{checked: player.isChecked}">
                 <div>
                     <input type="checkbox" ng-model="player.isChecked">
                     <a href="#" editable-text="player.name">{{ player.name || "empty" }}</a>
