@@ -1,12 +1,16 @@
 <div ng-controller="HomeController as home">
+    <div class="alert alert-danger" ng-show="home.isError">
+        <button type="button" class="close" data-ng-click="home.closeError()">×</button>
+        <strong>{{home.err.text}}</strong>: {{home.err.description}}
+    </div>
     <div class="panel panel-default">
         <div class="panel-heading">Игроки</div>
         <ul class="list-group">
-            <li class="list-group-item" ng-repeat="player in home.players track by $index"
+            <li class="list-group-item" ng-repeat="player in home.getPlayers() track by $index"
                 ng-class="{checked: player.isChecked}">
                 <div>
-                    <input type="checkbox" ng-model="player.isChecked">
-                    <a href="#" editable-text="player.name">{{ player.name || "empty" }}</a>
+                    <checkbox class="larger" ng-model="player.isChecked"></checkbox>
+                    <a href="#" editable-text="player.name">{{ player.name }}</a>
                     <button class="btn btn-danger pull-right" ng-click="home.removePlayer($index)">
                         <i class="glyphicon glyphicon-remove"></i>
                     </button>
@@ -16,14 +20,14 @@
         <form ng-submit="home.addNewPlayer()">
             <input class="input-lg" placeholder="новый игрок" ng-model="home.newPlayer"
                    ng-disabled="home.isSaving"
-                   typeahead="name for name in home.getPlayerNames() | filter:$viewValue | limitTo:5">
+                   typeahead="name as player.name for player in home.getPlayers() | filter:$viewValue | limitTo:5">
         </form>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Настройки</div>
         <div class="panel-body">
             <label>
-                <input type="checkbox" ng-model="home.game.isDoubleFirstRoll">
+                <input type="checkbox" ng-model="home.options.isDoubleFirstRoll">
                 Удваивание с первого броска
             </label>
         </div>

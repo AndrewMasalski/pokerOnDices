@@ -12,5 +12,8 @@
     "afterEach": false,
     "module": false,
     "inject": false
+  },
+  "predef": {
+    "Firebase": false
   }
 }

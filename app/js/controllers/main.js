@@ -9,9 +9,8 @@ angular.module('pokerOnDices.app')
         if (this.game.players.length === 0 || this.game.dices.length === 0) {
             //$location.path('/');
             this.game.addPlayer('me');
-            this.game.addPlayer('not me');
+            //this.game.addPlayer('not me');
             this.game.initDices();
-            this.game.players[0].isCurrent = true;
         }
 
         this.isRollEnabled = function () {
@@ -73,7 +72,7 @@ angular.module('pokerOnDices.app')
                 player.rollsLeft < 3 &&
                 this.game.currentPlayer == player &&
                 player.results[key] === undefined &&
-                player.possibleResults[key] === null;
+                player.possibleResults[key] == null;
         };
 
     }]);

@@ -6,7 +6,6 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
         this.currentPlayer = null;
         this.players = [];
         this.dices = [];
-        this.isInitialized = false;
         this.isDoubleFirstRoll = true;
         this.done = false;
         this.school = [

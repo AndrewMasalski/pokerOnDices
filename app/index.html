@@ -7,11 +7,12 @@
     <meta name="author" content="">
     <title>Покер на костях</title>
     <!-- styles -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css"/>
-    <link href="bower_components/angular-xeditable/dist/css/xeditable.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/animate.css"/>
-    <link rel="stylesheet" href="css/main.css"/>
-    <link rel="stylesheet" href="css/dices.css"/>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="bower_components/angular-xeditable/dist/css/xeditable.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="bower_components/ngActivityIndicator/css/ngActivityIndicator.min.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="css/animate.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="css/dices.css" media="all" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <div class="container-fluid">
@@ -19,16 +20,21 @@
         <h1>Покер<small> на костях</small></h1>
     </div>
     <!-- views -->
-    <div ng-view></div>
+    <div ng-show="AILoading" ng-activity-indicator></div>
+    <div ng-hide="AILoading" ng-view></div>
 </div>
 <!-- scripts -->
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/firebase/firebase.js"></script>
 <script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angularfire/dist/angularfire.min.js"></script>
 <script src="bower_components/angular-route/angular-route.min.js"></script>
 <script src="bower_components/angular-animate/angular-animate.min.js"></script>
 <script src="bower_components/angular-xeditable/dist/js/xeditable.min.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+<script src="bower_components/ngActivityIndicator/ngActivityIndicator.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/angular-bootstrap-checkbox/angular-bootstrap-checkbox.js"></script>
 <script src="bower_components/lodash/lodash.min.js"></script>
 
 <script src="js/game.js"></script>
