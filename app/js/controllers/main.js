@@ -42,6 +42,7 @@ angular.module('pokerOnDices.app')
                     });
                     if (gameData !== null) {
                         self.game.start(gameData.players);
+                        done();
                     } else {
                         onError('game with id "%s" not found ', gameId);
                     }
