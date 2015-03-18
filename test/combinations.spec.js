@@ -6,10 +6,10 @@ describe('combinations', function () {
     beforeEach(function () {
         module('pokerOnDices.logic');
         module('pokerOnDices.combinations');
-        inject(function (GameLogic, Combinations) {
+        inject(function (GameLogic, Combinations, Player) {
             game = GameLogic;
-            game.addPlayer('me');
             game.initDices(5);
+            game.start([new Player('me', 1)]);
             Comb = Combinations;
         });
     });

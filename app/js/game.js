@@ -30,10 +30,10 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
 
         this.initDices = function (num) {
             num = num || 5;
+            this.dices.length = 0;
             for (var i = 0; i < num; i++) {
                 this.dices.push(new Dice());
             }
-            this.isInitialized = true;
         };
 
         /**
@@ -47,13 +47,19 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
             this.updatePossibleResults();
         };
 
-        this.addPlayer = function (name) {
-            var player = new Player(name);
-            if (this.players.length === 0) {
-                player.isCurrent = true;
-                this.currentPlayer = player;
+        this.start = function (players) {
+            this.players.length = 0;
+            var self = this;
+            _.forEach(players, function (player) {
+                if (angular.isString(player)) {
+                    player = new Player(player);
+                }
+                self.players.push(player);
+            });
+            if (self.players.length > 0) {
+                self.players[0].isCurrent = true;
+                self.currentPlayer = self.players[0];
             }
-            this.players.push(player);
         };
 
         this.makeRoll = function (delay) {

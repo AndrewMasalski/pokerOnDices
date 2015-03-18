@@ -1,3 +1,6 @@
+/* jshint -W097 */
+'use strict';
+
 angular.module('pokerOnDices.app',
     [
         'ngRoute',
@@ -7,13 +10,14 @@ angular.module('pokerOnDices.app',
         'xeditable',
         'ui.bootstrap',
         'pokerOnDices.logic',
-        'ui.checkbox'
+        'ui.checkbox',
+        'base64'
     ])
     .config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
         //$locationProvider.hashPrefix('!');
         $routeProvider
             .when("/", {templateUrl: "./partials/home.html"})
-            .when("/game/:gameid", {templateUrl: "./partials/main.html"})
+            .when("/game/:gameId", {templateUrl: "./partials/main.html"})
             .otherwise({
                 redirectTo: '/'
             });

@@ -5,12 +5,11 @@ describe('game', function () {
     var game, $timeout;
     beforeEach(function () {
         module('pokerOnDices.logic');
-        inject(function (_$timeout_, GameLogic) {
+        inject(function (_$timeout_, GameLogic, Player) {
             $timeout = _$timeout_;
             game = GameLogic;
-            game.addPlayer('me');
-            game.addPlayer('not me');
             game.initDices(5);
+            game.start([new Player('me', 1), new Player('!me', 2)]);
         });
     });
 
@@ -24,6 +23,10 @@ describe('game', function () {
     });
 
     it('game.initDices()', function () {
+        expect(game.dices.length).toBe(5);
+    });
+
+    it('game.start()', function () {
         expect(game.dices.length).toBe(5);
     });
 

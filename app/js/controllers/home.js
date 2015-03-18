@@ -1,6 +1,6 @@
 angular.module('pokerOnDices.app')
-    .controller('HomeController', ['$rootScope', '$scope', '$timeout', '$location', '$firebaseObject', '$firebaseArray', '$firebaseAuth', 'GameLogic', 'Player',
-        function ($rootScope, $scope, $timeout, $location, $firebaseObject, $firebaseArray, $firebaseAuth, GameLogic, Player) {
+    .controller('HomeController', ['$rootScope', '$scope', '$timeout', '$location', '$firebaseObject', '$firebaseArray', '$firebaseAuth', '$base64', 'Player',
+        function ($rootScope, $scope, $timeout, $location, $firebaseObject, $firebaseArray, $firebaseAuth, $base64, Player) {
             /* jshint -W097 */
             'use strict';
 
@@ -11,7 +11,7 @@ angular.module('pokerOnDices.app')
             this.newPlayer = '';
 
             var self = this;
-            var playersObj, optionsObj;
+            var playersArr;
             var loadedPlayers = [];
             var sampleNames = [
                 'Сигизмунд', 'Евлампий', 'Гостомысл', 'Афиноген',
@@ -35,42 +35,27 @@ angular.module('pokerOnDices.app')
             };
 
             var authAndLoadData = function () {
-                var auth = $firebaseAuth(new Firebase('https://torrid-fire-8359.firebaseio.com/players'));
-                return auth.$authWithPassword({email: 'star.mnk@gmail.com', password: '00sloo'})
+                var auth = $firebaseAuth(new Firebase('https://torrid-fire-8359.firebaseio.com/'));
+                return auth.$authWithCustomToken('MswGuSbxWzrGo9WePCxEk6dA0gBBCCeG2KlbSXRj')
                     .then(function () {
-                        optionsObj = $firebaseObject(new Firebase('https://torrid-fire-8359.firebaseio.com/options'));
-                        return optionsObj.$loaded().then(function (data) {
-                            var options = data.$value;
-                            if (options === null) {
-                                optionsObj.$value = {isDoubleFirstRoll: false};
-                                return optionsObj.$bindTo($scope, 'options')
-                                    .then(function () {
-                                        self.options = $scope.options;
-                                        return optionsObj.$save();
-                                    });
-                            }
-                            return optionsObj.$bindTo($scope, 'options').then(function () {
-                                self.options = $scope.options;
-                            });
+                        var optionsObj = $firebaseObject(new Firebase('https://torrid-fire-8359.firebaseio.com/options'));
+                        return optionsObj.$bindTo($scope, 'options').then(function () {
+                            self.options = $scope.options;
                         });
                     })
                     .then(function () {
-                        playersObj = $firebaseArray(new Firebase('https://torrid-fire-8359.firebaseio.com/players'));
-                        return playersObj.$loaded();
+                        playersArr = $firebaseArray(new Firebase('https://torrid-fire-8359.firebaseio.com/players'));
+                        return playersArr.$loaded();
                     })
                     .then(function (data) {
                         _.forEach(data, function (playerData) {
-                            loadedPlayers.push(new Player(playerData.$value));
+                            loadedPlayers.push(new Player(playerData.$value, playerData.$id));
                         });
                         if (loadedPlayers.length === 0) {
-                            _.forEach(sampleNames, function (name) {
-                                var player = new Player(name);
-                                loadedPlayers.push(player);
-                                playersObj.$add(name);
-                            });
+                            return self.createInitialPlayers();
                         }
                     })
-                    .then(done, onError)
+                    .then(done, onError);
             };
 
             this.getPlayers = function () {
@@ -89,13 +74,13 @@ angular.module('pokerOnDices.app')
                 self.isSaving = true;
                 var player = new Player(this.newPlayer);
                 loadedPlayers.push(player);
-                playersObj.$add(this.newPlayer).then(done, onError);
+                playersArr.$add(this.newPlayer).then(done, onError);
                 this.newPlayer = '';
             };
 
             this.removePlayer = function (index) {
                 loadedPlayers.splice(index, 1);
-                playersObj.$remove(playersObj[index]).then(done, onError);
+                playersArr.$remove(playersArr[index]).then(done, onError);
             };
 
             this.getCheckedPlayers = function () {
@@ -104,15 +89,24 @@ angular.module('pokerOnDices.app')
                 });
             };
 
-            this.go = function (path) {
-                var self = this;
-                this.game = GameLogic;
-                this.game.initDices();
-                _.forEach(this.getCheckedPlayers(), function (player) {
-                    self.game.addPlayer(player.name);
-                });
+            this.startGame = function () {
+                var checkedPlayers = this.getCheckedPlayers();
+                $rootScope.AILoading = true;
+                var gamesArr = $firebaseArray(new Firebase('https://torrid-fire-8359.firebaseio.com/games'));
+                gamesArr.$add({players: _.pluck(checkedPlayers, 'name')}).then(function (newGame) {
+                    var encodedId = $base64.encode(newGame.key());
+                    $location.path('/game/' + encodedId);
+                }, onError);
+            };
 
-                $location.path(path + "/" + 1);
+            this.createInitialPlayers = function () {
+                var p = _.map(sampleNames, function (name) {
+                    return playersArr.$add(name).then(function (added) {
+                        var player = new Player(name, added.$id);
+                        loadedPlayers.push(player);
+                    });
+                });
+                return $q.all(p);
             };
 
             this.closeError = function () {

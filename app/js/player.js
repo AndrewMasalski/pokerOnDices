@@ -3,7 +3,8 @@
 
 angular.module('pokerOnDices.player', [])
     .factory('Player', function () {
-        return function (name) {
+        return function (name, id) {
+            this.id = id;
             this.name = name;
             this.schoolResults = [];
             this.results = [];
