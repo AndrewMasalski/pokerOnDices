@@ -9,8 +9,9 @@ angular.module('pokerOnDices.app')
             var isRolling = false;
             var self = this;
             this.game = GameLogic;
+            this.game.initDices();
 
-            var gameId = $routeParams['gameId'];
+            var gameId = $routeParams.gameId;
             $rootScope.AILoading = true;
             if (!!gameId) {
                 var decoded = $base64.decode(gameId);
@@ -22,7 +23,6 @@ angular.module('pokerOnDices.app')
                         return game.$id == decoded;
                     });
                     if (gameData !== null) {
-                        self.game.initDices();
                         self.game.start(gameData.players);
                     } else {
                         console.log('game with id "%s" not found ', gameId);
