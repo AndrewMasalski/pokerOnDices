@@ -1,5 +1,8 @@
 <div ng-controller="MainController as main">
-
+    <div class="alert alert-danger" ng-show="main.isError">
+        <button type="button" class="close" data-ng-click="main.closeError()">×</button>
+        <strong>{{main.err.text}}</strong>: {{main.err.description}}
+    </div>
     <div class="row vertical-align">
         <div class="col-xs-2 col-sm-2 col-md-2">
             <!--<div>Result: {{main.getState().result}}</div>-->

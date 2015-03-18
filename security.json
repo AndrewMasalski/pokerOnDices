@@ -1,12 +1,18 @@
 {
   "rules": {
-    ".read": false,
+    ".read": true,
     ".write": false,
     "players": {
       ".read": true,
       "$player": {
         ".write": "auth != null",
         ".validate": "newData.isString() && newData.val().length <= 1000"
+      }
+    },
+    "games": {
+      ".read": true,
+      "$game": {
+        ".write": "auth != null"
       }
     },
     "options": {

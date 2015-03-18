@@ -6,10 +6,28 @@ angular.module('pokerOnDices.app')
     .controller('MainController',
     ['$q', '$rootScope', '$timeout', '$routeParams', '$base64', '$firebaseArray', 'GameLogic',
         function ($q, $rootScope, $timeout, $routeParams, $base64, $firebaseArray, GameLogic) {
-            var isRolling = false;
-            var self = this;
+            this.isError = false;
             this.game = GameLogic;
             this.game.initDices();
+
+            var isRolling = false;
+            var self = this;
+            var done = function () {
+                $rootScope.AILoading = false;
+                self.isSaving = false;
+            };
+            var onError = function (errText, autoClose) {
+                done();
+                autoClose = autoClose || false;
+                var msg = angular.isString(errText) ? errText : errText.message;
+                self.isError = true;
+                self.err = {text: 'Ошибка', description: msg};
+                if (autoClose) {
+                    $timeout(function () {
+                        self.closeError();
+                    }, 3000);
+                }
+            };
 
             var gameId = $routeParams.gameId;
             $rootScope.AILoading = true;
@@ -25,12 +43,10 @@ angular.module('pokerOnDices.app')
                     if (gameData !== null) {
                         self.game.start(gameData.players);
                     } else {
-                        console.log('game with id "%s" not found ', gameId);
+                        onError('game with id "%s" not found ', gameId);
                     }
-                    $rootScope.AILoading = false;
                 }, function (err) {
-                    console.log('game failed to load: ' + err);
-                    $rootScope.AILoading = false;
+                    onError('game failed to load: ' + err);
                 });
             }
 
