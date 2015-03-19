@@ -3,10 +3,13 @@
 
 angular.module('pokerOnDices.dice', [])
     .factory('Dice', function () {
-        return function () {
+        return function (data) {
             this.isLocked = false;
             this.value = 1;
             this.num = 1;
+            if (angular.isObject(data)) {
+                angular.extend(this, data);
+            }
 
             this.switchLocked = function () {
                 this.isLocked = !this.isLocked;
@@ -38,6 +41,18 @@ angular.module('pokerOnDices.dice', [])
                         break;
                 }
             };
+
+            // todo: make base class for both dice and player with such method
+            this.toDb = function () {
+                var res = {};
+                for (var key in this) {
+                    if (!this.hasOwnProperty(key)) continue;
+                    if (angular.isFunction(this[key])) continue;
+                    res[key] = this[key];
+                }
+                return res;
+            };
+
         };
 
     });

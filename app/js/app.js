@@ -9,6 +9,7 @@ angular.module('pokerOnDices.app',
         'animate',
         'xeditable',
         'ui.bootstrap',
+        'pokerOnDices.auth',
         'pokerOnDices.logic',
         'ui.checkbox',
         'base64'

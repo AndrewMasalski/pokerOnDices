@@ -4,12 +4,15 @@
 
 angular.module('pokerOnDices.app')
     .controller('MainController',
-    ['$q', '$rootScope', '$timeout', '$routeParams', '$base64', '$firebaseArray', 'GameLogic',
-        function ($q, $rootScope, $timeout, $routeParams, $base64, $firebaseArray, GameLogic) {
+    ['$q', '$rootScope', '$timeout', '$location', '$routeParams', '$firebaseObject', '$base64', 'PokerOnDicesAuth', 'GameLogic',
+        function ($q, $rootScope, $timeout, $location, $routeParams, $firebaseObject, $base64, PokerOnDicesAuth, GameLogic) {
             this.isError = false;
             this.game = GameLogic;
-            this.game.initDices();
+            this.game.dices.length = 0;
+            this.game.saveEvent = saveGameState;
 
+            var decodedGameId = $base64.decode($routeParams.gameId);
+            var gamesFb;
             var isRolling = false;
             var self = this;
             var done = function () {
@@ -29,26 +32,23 @@ angular.module('pokerOnDices.app')
                 }
             };
 
-            var gameId = $routeParams.gameId;
             $rootScope.AILoading = true;
-            if (!!gameId) {
-                var decoded = $base64.decode(gameId);
-                var gamesArr = $firebaseArray(new Firebase('https://torrid-fire-8359.firebaseio.com/games'));
-                console.log('loading game with id: ' + decoded);
-                var gameData;
-                gamesArr.$loaded().then(function (arr) {
-                    gameData = _.find(arr, function (game) {
-                        return game.$id == decoded;
-                    });
-                    if (gameData !== null) {
-                        self.game.start(gameData.players);
+            if (!!decodedGameId) {
+                PokerOnDicesAuth.doAuth().then(function () {
+                    gamesFb = $firebaseObject(new Firebase('https://torrid-fire-8359.firebaseio.com/games'));
+                    console.log('loading game with id: ' + decodedGameId);
+                    return gamesFb.$loaded();
+                }).then(function (arr) {
+                    var gameData = arr[decodedGameId];
+                    if (!!gameData) {
+                        self.game.start(gameData);
                         done();
                     } else {
-                        onError('game with id "%s" not found ', gameId);
+                        $location.path('#/');
                     }
-                }, function (err) {
-                    onError('game failed to load: ' + err);
-                });
+                }).then(null, onError)
+            } else {
+                $location.path('#/');
             }
 
             this.isRollEnabled = function () {
@@ -79,39 +79,36 @@ angular.module('pokerOnDices.app')
             };
 
             this.onRollClick = function () {
-                var self = this;
                 isRolling = true;
                 this.game.makeRoll(1000)
                     .then(function (rolled) {
                         isRolling = false;
                         console.log('rolled: [' + _.pluck(rolled, 'value').join(', ') + ']');
-                    });
+                    })
+                    .then(saveGameState);
             };
 
-            /* todo: move this to game logic and write unit tests */
             this.isSchoolPossible = function (player, key) {
-                return !isRolling &&
-                    this.game.currentPlayer == player &&
-                    player.schoolResults[key] === undefined &&
-                    (key in player.schoolPossibleResults && player.schoolPossibleResults[key] !== null);
+                return !isRolling && player.isSchoolPossible(key);
             };
 
-            /* todo: move this to game logic and write unit tests */
             this.isPossible = function (player, key) {
-                return !isRolling &&
-                    this.game.currentPlayer == player &&
-                    player.results[key] === undefined &&
-                    (key in player.possibleResults && player.possibleResults[key] !== null);
+                return !isRolling && player.isPossible(key);
             };
 
-            /* todo: move this to game logic and write unit tests */
             this.canCrossOut = function (player, key) {
-                return !isRolling &&
-                    player.rollsLeft < 3 &&
-                    this.game.currentPlayer == player &&
-                    player.results[key] === undefined &&
-                    (!(key in player.possibleResults) || player.possibleResults[key] === null);
+                return !isRolling && player.rollsLeft < 3 && player.canCrossOut(key);
             };
 
+            function saveGameState() {
+                gamesFb[decodedGameId].isFirstRoll = false;
+                gamesFb[decodedGameId].dices = _.map(self.getDices(), function (dice) {
+                    return dice.toDb()
+                });
+                _.forEach(self.game.players, function (player) {
+                    gamesFb[decodedGameId].players[player.id] = player.toDb();
+                });
+                return gamesFb.$save().then(null, onError);
+            }
         }]);
 

@@ -28,13 +28,7 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
             new Combinations.Chance('шанс')
         ];
 
-        this.initDices = function (num) {
-            num = num || 5;
-            this.dices.length = 0;
-            for (var i = 0; i < num; i++) {
-                this.dices.push(new Dice());
-            }
-        };
+        this.saveEvent = null;
 
         /**
          * Used for testing purposes
@@ -47,19 +41,32 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
             this.updatePossibleResults();
         };
 
-        this.start = function (players) {
+        this.start = function (gameData) {
             this.players.length = 0;
             var self = this;
-            _.forEach(players, function (player) {
-                if (angular.isString(player)) {
-                    player = new Player(player);
+            this.dices.length = 0;
+            if (!!gameData.dices && gameData.dices.length > 0) {
+                this.dices = gameData.dices.map(function (diceData) {
+                    return new Dice(diceData);
+                });
+            } else {
+                for (var i = 0; i < 5; i++) {
+                    this.dices.push(new Dice());
                 }
+            }
+            var playersData = gameData.players;
+            _.forEach(playersData, function (playerData) {
+                var player = new Player(playerData);
                 self.players.push(player);
+                if (player.isCurrent) {
+                    self.currentPlayer = player;
+                }
             });
-            if (self.players.length > 0) {
+            if (self.currentPlayer === null) {
                 self.players[0].isCurrent = true;
                 self.currentPlayer = self.players[0];
             }
+            this.updatePossibleResults();
         };
 
         this.makeRoll = function (delay) {
@@ -150,6 +157,9 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
                 this.done = true;
                 this.currentPlayer.isCurrent = false;
                 this.currentPlayer = null;
+            }
+            if (this.saveEvent != null) {
+                this.saveEvent();
             }
         };
 

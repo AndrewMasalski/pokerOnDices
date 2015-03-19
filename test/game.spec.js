@@ -8,8 +8,7 @@ describe('game', function () {
         inject(function (_$timeout_, GameLogic, Player) {
             $timeout = _$timeout_;
             game = GameLogic;
-            game.initDices(5);
-            game.start([new Player('me', 1), new Player('!me', 2)]);
+            game.start({players: [new Player('me', 1), new Player('!me', 2)]});
         });
     });
 
@@ -22,11 +21,7 @@ describe('game', function () {
         expect(game.combinations.length).toBe(9);
     });
 
-    it('game.initDices()', function () {
-        expect(game.dices.length).toBe(5);
-    });
-
-    it('game.start()', function () {
+    it('game dices', function () {
         expect(game.dices.length).toBe(5);
     });
 

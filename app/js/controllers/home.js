@@ -1,6 +1,7 @@
 angular.module('pokerOnDices.app')
-    .controller('HomeController', ['$rootScope', '$scope', '$timeout', '$location', '$firebaseObject', '$firebaseArray', '$firebaseAuth', '$base64', 'Player',
-        function ($rootScope, $scope, $timeout, $location, $firebaseObject, $firebaseArray, $firebaseAuth, $base64, Player) {
+    .controller('HomeController',
+    ['$rootScope', '$scope', '$timeout', '$location', '$firebaseObject', '$firebaseArray', '$base64', 'PokerOnDicesAuth', 'Player',
+        function ($rootScope, $scope, $timeout, $location, $firebaseObject, $firebaseArray, $base64, PokerOnDicesAuth, Player) {
             /* jshint -W097 */
             'use strict';
 
@@ -35,8 +36,7 @@ angular.module('pokerOnDices.app')
             };
 
             var authAndLoadData = function () {
-                var auth = $firebaseAuth(new Firebase('https://torrid-fire-8359.firebaseio.com/'));
-                return auth.$authWithCustomToken('MswGuSbxWzrGo9WePCxEk6dA0gBBCCeG2KlbSXRj')
+                PokerOnDicesAuth.doAuth()
                     .then(function () {
                         var optionsObj = $firebaseObject(new Firebase('https://torrid-fire-8359.firebaseio.com/options'));
                         return optionsObj.$bindTo($scope, 'options').then(function () {
@@ -49,8 +49,12 @@ angular.module('pokerOnDices.app')
                     })
                     .then(function (data) {
                         _.forEach(data, function (playerData) {
-                            loadedPlayers.push(new Player(playerData.$value, playerData.$id));
+                            loadedPlayers.push(new Player({name: playerData.$value, id: playerData.$id}));
                         });
+                        if (loadedPlayers.length > 0) {
+                            loadedPlayers[0].isChecked = true;
+                            loadedPlayers[1].isChecked = true;
+                        }
                         if (loadedPlayers.length === 0) {
                             return self.createInitialPlayers();
                         }
@@ -92,8 +96,12 @@ angular.module('pokerOnDices.app')
             this.startGame = function () {
                 var checkedPlayers = this.getCheckedPlayers();
                 $rootScope.AILoading = true;
-                var gamesArr = $firebaseArray(new Firebase('https://torrid-fire-8359.firebaseio.com/games'));
-                gamesArr.$add({players: _.pluck(checkedPlayers, 'name')}).then(function (newGame) {
+                var gamesFb = $firebaseArray(new Firebase('https://torrid-fire-8359.firebaseio.com/games'));
+                var newGame = { isFirstRoll: true, players: {} };
+                _.forEach(checkedPlayers, function (player) {
+                    newGame.players[player.id] = player.toDb();
+                });
+                return gamesFb.$add(newGame).then(function (newGame) {
                     var encodedId = $base64.encode(newGame.key());
                     $location.path('/game/' + encodedId);
                 }, onError);

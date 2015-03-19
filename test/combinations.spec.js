@@ -8,8 +8,7 @@ describe('combinations', function () {
         module('pokerOnDices.combinations');
         inject(function (GameLogic, Combinations, Player) {
             game = GameLogic;
-            game.initDices(5);
-            game.start([new Player('me', 1)]);
+            game.start({players: [new Player('me', 1)]});
             Comb = Combinations;
         });
     });

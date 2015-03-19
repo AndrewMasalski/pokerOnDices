@@ -18,10 +18,10 @@ module.exports = function (config) {
             'app/bower_components/lodash/lodash.js',
             'app/bower_components/angular/angular.js',
             'app/bower_components/angular-mocks/angular-mocks.js',
-            'app/js/player.js',
-            'app/js/dice.js',
-            'app/js/combinations.js',
-            'app/js/game.js',
+            'app/js/factories/player.js',
+            'app/js/factories/dice.js',
+            'app/js/services/combinations.js',
+            'app/js/services/game.js',
             'test/**/*.js'
         ],
 
