@@ -17,7 +17,7 @@ angular.module('pokerOnDices.app')
             var loadedPlayers = [];
             var sampleNames = [
                 'Сигизмунд', 'Евлампий', 'Гостомысл', 'Афиноген',
-                'София', 'Оксана', 'Денис', 'Сергей', 'Андрей'
+                'София', 'Оксана', 'lk', 'antik', 'starmonkey'
             ];
             var done = function () {
                 $rootScope.AILoading = false;
@@ -84,7 +84,7 @@ angular.module('pokerOnDices.app')
                             var gamePlayers = _.reduce(ordered, function (sum, current) {
                                 return sum + (sum.length === 0 ? '' : ', ') + current.name;
                             }, '');
-                            console.log(game);
+                            //console.log(game);
                             var encodedId = $base64.encode(game.$id);
                             var progress = game.isDone ? 'сыграна' : getGameProgress(game) + '%';
                             return { id: encodedId, description: gamePlayers, progress: progress };
