@@ -9,15 +9,15 @@ angular.module('pokerOnDices.app')
             this.isError = false;
             this.game = GameLogic;
             this.game.dices.length = 0;
-            this.game.saveEvent = saveGameState;
 
-            var decodedGameId = $base64.decode($routeParams.gameId);
             var gamesFb;
-            var isRolling = false;
+            var rollDisabled = false;
             var self = this;
+            var rollingDone = function () {
+                rollDisabled = false;
+            };
             var done = function () {
                 $rootScope.AILoading = false;
-                self.isSaving = false;
             };
             var onError = function (errText, autoClose) {
                 done();
@@ -33,6 +33,12 @@ angular.module('pokerOnDices.app')
             };
 
             $rootScope.AILoading = true;
+            var decodedGameId;
+            try {
+                decodedGameId = $base64.decode($routeParams.gameId);
+            } catch (e) {
+                onError(e);
+            }
             if (!!decodedGameId) {
                 PokerOnDicesAuth.doAuth().then(function () {
                     gamesFb = $firebaseObject(new Firebase('https://torrid-fire-8359.firebaseio.com/games'));
@@ -44,17 +50,19 @@ angular.module('pokerOnDices.app')
                         self.game.start(gameData);
                         done();
                     } else {
+                        console.error('game not found: redirecting');
                         $location.path('#/');
                     }
-                }).then(null, onError)
+                }).then(null, onError);
             } else {
+                console.error('game decode error: redirecting');
                 $location.path('#/');
             }
 
             this.isRollEnabled = function () {
                 var isDone = this.game.done;
                 var currentPlayerAble = !!this.game.currentPlayer && this.game.currentPlayer.isRollEnabled();
-                return !isDone && !isRolling && currentPlayerAble;
+                return !isDone && !rollDisabled && currentPlayerAble;
             };
 
             this.getDices = function () {
@@ -79,36 +87,51 @@ angular.module('pokerOnDices.app')
             };
 
             this.onRollClick = function () {
-                isRolling = true;
+                rollDisabled = true;
                 this.game.makeRoll(1000)
-                    .then(function (rolled) {
-                        isRolling = false;
-                        console.log('rolled: [' + _.pluck(rolled, 'value').join(', ') + ']');
-                    })
-                    .then(saveGameState);
+                    .then(saveGameState)
+                    .then(rollingDone, rollingDone);
             };
 
             this.isSchoolPossible = function (player, key) {
-                return !isRolling && player.isSchoolPossible(key);
+                return !rollDisabled && player.rollsLeft < 3 && player.isSchoolPossible(key);
             };
 
             this.isPossible = function (player, key) {
-                return !isRolling && player.isPossible(key);
+                return !rollDisabled && player.rollsLeft < 3 && player.isPossible(key);
             };
 
             this.canCrossOut = function (player, key) {
-                return !isRolling && player.rollsLeft < 3 && player.canCrossOut(key);
+                return !rollDisabled && player.rollsLeft < 3 && player.canCrossOut(key);
+            };
+
+            this.pickSchool = function (index) {
+                rollDisabled = true;
+                this.game.pickSchoolResult(index);
+                saveGameState().then(rollingDone, rollingDone);
+            };
+
+            this.pick = function (index) {
+                rollDisabled = true;
+                this.game.pickResult(index);
+                saveGameState().then(rollingDone, rollingDone);
+            };
+
+            this.cross = function (index) {
+                rollDisabled = true;
+                this.game.crossOut(index);
+                saveGameState().then(rollingDone, rollingDone);
             };
 
             function saveGameState() {
                 gamesFb[decodedGameId].isFirstRoll = false;
                 gamesFb[decodedGameId].dices = _.map(self.getDices(), function (dice) {
-                    return dice.toDb()
+                    return dice.toDb();
                 });
                 _.forEach(self.game.players, function (player) {
                     gamesFb[decodedGameId].players[player.id] = player.toDb();
                 });
-                return gamesFb.$save().then(null, onError);
+                return gamesFb.$save();
             }
         }]);
 

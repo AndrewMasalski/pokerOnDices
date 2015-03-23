@@ -5,6 +5,7 @@ angular.module('pokerOnDices.dice', [])
     .factory('Dice', function () {
         return function (data) {
             this.isLocked = false;
+            this.isRotating = false;
             this.value = 1;
             this.num = 1;
             if (angular.isObject(data)) {

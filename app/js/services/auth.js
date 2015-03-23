@@ -17,5 +17,5 @@ angular.module('pokerOnDices.auth', [])
                         return true;
                     });
                 }
-            }
+            };
         }]);

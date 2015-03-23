@@ -69,6 +69,7 @@ angular.module('pokerOnDices.player', [])
             /* todo: create unit test */
             this.isSchoolPossible = function (index) {
                 return this.isCurrent &&
+                    this.rollsLeft < 3 &&
                     this.schoolResults[index] === undefined &&
                     index in this.schoolPossibleResults &&
                     this.schoolPossibleResults[index] !== null;
@@ -77,6 +78,7 @@ angular.module('pokerOnDices.player', [])
             /* todo: create unit test */
             this.isPossible = function (index) {
                 return this.isCurrent &&
+                    this.rollsLeft < 3 &&
                     this.results[index] === undefined &&
                     index in this.possibleResults &&
                     this.possibleResults[index] !== null;
@@ -86,6 +88,7 @@ angular.module('pokerOnDices.player', [])
             /* todo: create unit test */
             this.canCrossOut = function (key) {
                 return this.isCurrent &&
+                    this.rollsLeft < 3 &&
                     this.results[key] === undefined &&
                     (!(key in this.possibleResults) || this.possibleResults[key] === null);
             };
@@ -106,11 +109,7 @@ angular.module('pokerOnDices.player', [])
                 var arr = [];
                 for (var i in obj) {
                     if (obj.hasOwnProperty(i)) {
-                        if (angular.isNumber(i)) {
-                            arr[i] = obj[i];
-                        } else {
-                            arr.push(obj[i]);
-                        }
+                        arr[i] = obj[i];
                     }
                 }
                 return arr;

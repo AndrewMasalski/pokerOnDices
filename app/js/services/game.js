@@ -28,8 +28,6 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
             new Combinations.Chance('шанс')
         ];
 
-        this.saveEvent = null;
-
         /**
          * Used for testing purposes
          * @param arr
@@ -45,6 +43,7 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
             this.players.length = 0;
             var self = this;
             this.dices.length = 0;
+            this.done = gameData.isDone;
             if (!!gameData.dices && gameData.dices.length > 0) {
                 this.dices = gameData.dices.map(function (diceData) {
                     return new Dice(diceData);
@@ -62,9 +61,10 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
                     self.currentPlayer = player;
                 }
             });
-            if (self.currentPlayer === null) {
-                self.players[0].isCurrent = true;
-                self.currentPlayer = self.players[0];
+            if (this.currentPlayer === null && this.done !== true) {
+                var firstPlayer = this.players[0];
+                firstPlayer.isCurrent = true;
+                this.currentPlayer = firstPlayer;
             }
             this.updatePossibleResults();
         };
@@ -91,6 +91,7 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
         };
 
         this.updatePossibleResults = function () {
+            if (this.currentPlayer === null) return;
             var self = this;
             this.currentPlayer.schoolPossibleResults.length = 0;
             this.currentPlayer.possibleResults.length = 0;
@@ -157,9 +158,6 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
                 this.done = true;
                 this.currentPlayer.isCurrent = false;
                 this.currentPlayer = null;
-            }
-            if (this.saveEvent != null) {
-                this.saveEvent();
             }
         };
 

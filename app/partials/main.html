@@ -5,7 +5,6 @@
     </div>
     <div class="row vertical-align">
         <div class="col-xs-2 col-sm-2 col-md-2">
-            <!--<div>Result: {{main.getState().result}}</div>-->
             <button type="button" class="btn btn-success btn-lg" ng-disabled="!main.isRollEnabled()"
                     ng-click="main.onRollClick()">
                 {{main.rollText()}}
@@ -40,14 +39,14 @@
                 <td ng-repeat="player in main.game.players" class="{{player.isCurrent ? 'shadow' : ''}}">
                     <button type="button" class="btn btn-sm" ng-class="player.schoolPossibleResults[key] < 0 ? 'btn-danger' : 'btn-success'"
                             ng-if="main.isSchoolPossible(player, key)"
-                            ng-click="main.game.pickSchoolResult(key)">
+                            ng-click="main.pickSchool(key)">
                         {{ player.schoolPossibleResults[key] }}
                     </button>
                     <h5 ng-if="player.schoolResults[key] != null">{{ player.schoolResults[key] }}</h5>
                 </td>
             </tr>
             <tr class="info">
-                <th><b>Школа</b></th>
+                <th><b>школа</b></th>
                 <td ng-repeat="player in main.game.players" class="{{player.isCurrent ? 'shadow' : ''}}">
                     <h5>{{ player.getSchoolTotal() }}</h5>
                 </td>
@@ -57,11 +56,11 @@
                 <td ng-repeat="player in main.game.players" class="{{player.isCurrent ? 'shadow' : ''}}">
                     <button type="button" class="btn btn-default btn-sm"
                             ng-if="main.isPossible(player, key)"
-                            ng-click="main.game.pickResult(key)">
+                            ng-click="main.pick(key)">
                         {{ player.possibleResults[key] }}
                     </button>
                     <button class="btn btn-danger btn-sm"
-                            ng-click="main.game.crossOut(key)"
+                            ng-click="main.cross(key)"
                             ng-if="main.canCrossOut(player, key)">
                         <i class="glyphicon glyphicon-remove"></i>
                     </button>
