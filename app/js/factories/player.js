@@ -56,13 +56,13 @@ angular.module('pokerOnDices.player', [])
             };
 
             this.isCompleted = function () {
-                var schoolCompleted = this.schoolResults.length === 6 && _.all(this.schoolResults, function (res) {
-                        return res !== null;
-                    });
+                var schoolCompleted = _.filter(this.schoolResults, function (res) {
+                        return res !== null && res !== undefined;
+                    }).length === 6;
 
-                var completed = this.results.length === 9 && _.all(this.results, function (res) {
-                        return res !== null;
-                    });
+                var completed = _.filter(this.results, function (res) {
+                        return res !== null && res !== undefined;
+                    }).length === 9;
                 return schoolCompleted && completed;
             };
 

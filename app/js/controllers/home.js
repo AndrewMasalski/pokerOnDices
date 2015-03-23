@@ -13,6 +13,7 @@ angular.module('pokerOnDices.app')
 
             var self = this;
             var playersArr;
+            var loadedGames = [];
             var loadedPlayers = [];
             var sampleNames = [
                 'Сигизмунд', 'Евлампий', 'Гостомысл', 'Афиноген',
@@ -35,19 +36,31 @@ angular.module('pokerOnDices.app')
                 }
             };
 
-            var authAndLoadData = function () {
-                PokerOnDicesAuth.doAuth()
-                    .then(function () {
-                        var optionsObj = $firebaseObject(new Firebase('https://torrid-fire-8359.firebaseio.com/options'));
-                        return optionsObj.$bindTo($scope, 'options').then(function () {
-                            self.options = $scope.options;
-                        });
-                    })
-                    .then(function () {
-                        playersArr = $firebaseArray(new Firebase('https://torrid-fire-8359.firebaseio.com/players'));
-                        return playersArr.$loaded();
-                    })
-                    .then(function (data) {
+            var getGameProgress = function (gameData) {
+                var movesDone = _.reduce(gameData.players, function (sum, current) {
+                    var schoolDone = _.filter(current.schoolResults, function (res) {
+                        return res !== null && res !== undefined;
+                    });
+                    var resDone = _.filter(current.results, function (res) {
+                        return res !== null && res !== undefined;
+                    });
+                    return sum + schoolDone.length +  resDone.length;
+                }, 0);
+                var playersCount = _.keys(gameData.players).length;
+                var res = movesDone / (playersCount * 15) * 100;
+                return Number(res).toFixed(1);
+            };
+
+            PokerOnDicesAuth.doAuth()
+                .then(function () {
+                    var optionsObj = $firebaseObject(new Firebase('https://torrid-fire-8359.firebaseio.com/options'));
+                    return optionsObj.$bindTo($scope, 'options').then(function () {
+                        self.options = $scope.options;
+                    });
+                })
+                .then(function () {
+                    playersArr = $firebaseArray(new Firebase('https://torrid-fire-8359.firebaseio.com/players'));
+                    return playersArr.$loaded().then(function (data) {
                         _.forEach(data, function (playerData) {
                             loadedPlayers.push(new Player({name: playerData.$value, id: playerData.$id}));
                         });
@@ -58,12 +71,34 @@ angular.module('pokerOnDices.app')
                         if (loadedPlayers.length === 0) {
                             return self.createInitialPlayers();
                         }
-                    })
-                    .then(done, onError);
-            };
+                    });
+                })
+                .then(function () {
+                    var gamesFb = $firebaseArray(new Firebase('https://torrid-fire-8359.firebaseio.com/games'));
+                    return gamesFb.$loaded().then(function (games) {
+                        loadedGames = _.map(games, function (game) {
+                            var ordered = _.sortBy(game.players, function (player) {
+                                var pl = new Player(player);
+                                return pl.getTotal();
+                            }).reverse();
+                            var gamePlayers = _.reduce(ordered, function (sum, current) {
+                                return sum + (sum.length === 0 ? '' : ', ') + current.name;
+                            }, '');
+                            console.log(game);
+                            var encodedId = $base64.encode(game.$id);
+                            var progress = game.isDone ? 'сыграна' : getGameProgress(game) + '%';
+                            return { id: encodedId, description: gamePlayers, progress: progress };
+                        });
+                    });
+                })
+                .then(done, onError);
 
             this.getPlayers = function () {
                 return loadedPlayers;
+            };
+
+            this.getGames = function () {
+                return loadedGames;
             };
 
             this.addNewPlayer = function () {
@@ -97,7 +132,7 @@ angular.module('pokerOnDices.app')
                 var checkedPlayers = this.getCheckedPlayers();
                 $rootScope.AILoading = true;
                 var gamesFb = $firebaseArray(new Firebase('https://torrid-fire-8359.firebaseio.com/games'));
-                var newGame = { isFirstRoll: true, players: {} };
+                var newGame = {isFirstRoll: true, isDone: false, players: {}};
                 _.forEach(checkedPlayers, function (player) {
                     newGame.players[player.id] = player.toDb();
                 });
@@ -122,5 +157,4 @@ angular.module('pokerOnDices.app')
                 self.isError = false;
             };
 
-            authAndLoadData();
         }]);

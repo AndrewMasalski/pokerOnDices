@@ -3,25 +3,42 @@
         <button type="button" class="close" data-ng-click="home.closeError()">×</button>
         <strong>{{home.err.text}}</strong>: {{home.err.description}}
     </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">Игроки</div>
-        <ul class="list-group">
-            <li class="list-group-item" ng-repeat="player in home.getPlayers() track by $index"
-                ng-class="{checked: player.isChecked}">
-                <div>
-                    <checkbox class="larger" ng-model="player.isChecked"></checkbox>
-                    <a href="#" editable-text="player.name">{{ player.name }}</a>
-                    <button class="btn btn-danger pull-right" ng-click="home.removePlayer($index)">
-                        <i class="glyphicon glyphicon-remove"></i>
-                    </button>
-                </div>
-            </li>
-        </ul>
-        <form ng-submit="home.addNewPlayer()">
-            <input class="input-lg" placeholder="новый игрок" ng-model="home.newPlayer"
-                   ng-disabled="home.isSaving"
-                   typeahead="name as player.name for player in home.getPlayers() | filter:$viewValue | limitTo:5">
-        </form>
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Игроки</div>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="player in home.getPlayers() track by $index"
+                        ng-class="{checked: player.isChecked}">
+                        <div>
+                            <checkbox class="larger" ng-model="player.isChecked"></checkbox>
+                            <a href="#" editable-text="player.name">{{ player.name }}</a>
+                            <button class="btn btn-danger pull-right" ng-click="home.removePlayer($index)">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+                <form ng-submit="home.addNewPlayer()">
+                    <input class="input-lg" placeholder="новый игрок" ng-model="home.newPlayer"
+                           ng-disabled="home.isSaving"
+                           typeahead="name as player.name for player in home.getPlayers() | filter:$viewValue | limitTo:5">
+                </form>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Игры</div>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="game in home.getGames() track by $index">
+                        <div>
+                            <a href="#/game/{{game.id}}">{{ game.description }} ({{ game.progress }})</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Настройки</div>

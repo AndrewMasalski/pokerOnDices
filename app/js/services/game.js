@@ -67,6 +67,7 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
                 this.currentPlayer = firstPlayer;
             }
             this.updatePossibleResults();
+            this.isGameCompleted();
         };
 
         this.makeRoll = function (delay) {

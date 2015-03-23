@@ -125,6 +125,7 @@ angular.module('pokerOnDices.app')
 
             function saveGameState() {
                 gamesFb[decodedGameId].isFirstRoll = false;
+                gamesFb[decodedGameId].isDone = self.game.done;
                 gamesFb[decodedGameId].dices = _.map(self.getDices(), function (dice) {
                     return dice.toDb();
                 });
