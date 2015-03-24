@@ -2,6 +2,10 @@ a.editable-click {
     font-size: 150%;
 }
 
+a.game-click {
+    font-size: 150%;
+}
+
 .vertical-align {
     display: flex;
     flex-direction: row;

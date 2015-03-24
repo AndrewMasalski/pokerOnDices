@@ -12,7 +12,7 @@
                         ng-class="{checked: player.isChecked}">
                         <div>
                             <checkbox class="larger" ng-model="player.isChecked"></checkbox>
-                            <a href="#" editable-text="player.name">{{ player.name }}</a>
+                            <a href="#" editable-text="player.name" onbeforesave="home.updatePlayer($index, $data)">{{ player.name }}</a>
                             <button class="btn btn-danger pull-right" ng-click="home.removePlayer($index)">
                                 <i class="glyphicon glyphicon-remove"></i>
                             </button>
@@ -32,8 +32,11 @@
                 <ul class="list-group">
                     <li class="list-group-item" ng-repeat="game in home.getGames() track by $index">
                         <div>
-                            <a href="#/game/{{game.id}}">{{ game.description }}</a>
+                            <a class="game-click" href="#/game/{{game.id}}">{{ game.description }}</a>
                             <span class="label label-info">{{ game.progress }}</span>
+                            <button class="btn btn-danger pull-right" ng-click="home.removeGame($index)">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
                         </div>
                     </li>
                 </ul>
