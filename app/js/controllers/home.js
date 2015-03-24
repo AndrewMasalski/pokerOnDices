@@ -55,10 +55,6 @@ angular.module('pokerOnDices.app')
                 loadedPlayers = _.map(playersArr, function (playerData) {
                     return new Player({name: playerData.$value, id: playerData.$id});
                 });
-                if (loadedPlayers.length > 1) {
-                    loadedPlayers[0].isChecked = true;
-                    loadedPlayers[1].isChecked = true;
-                }
                 if (loadedPlayers.length === 0) {
                     return self.createInitialPlayers();
                 }
