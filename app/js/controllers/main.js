@@ -93,6 +93,13 @@ angular.module('pokerOnDices.app')
                     .then(rollingDone, rollingDone);
             };
 
+            this.lockDice = function (index) {
+                if (this.game.currentPlayer === null || this.game.currentPlayer === undefined) return;
+                if (this.game.currentPlayer.rollsLeft > 2) return;
+                var dice = self.game.dices[index];
+                dice.switchLocked();
+            };
+
             this.isSchoolPossible = function (player, key) {
                 return !rollDisabled && player.rollsLeft < 3 && player.isSchoolPossible(key);
             };

@@ -14,7 +14,7 @@
             <div class="die {{item.num}} {{item.isLocked ? 'locked' : ''}}"
                  rotate-flip="item.isRotating"
                  ng-repeat="item in main.getDices()"
-                 ng-click="item.switchLocked()">
+                 ng-click="main.lockDice($index)">
                 <span class="dot"></span>
             </div>
         </div>
