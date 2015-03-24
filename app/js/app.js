@@ -23,6 +23,17 @@ angular.module('pokerOnDices.app',
                 redirectTo: '/'
             });
     }])
+    .animation('.rotate-flip', ['$timeout', function ($timeout) {
+        return {
+            setup: function (element) {
+            },
+            start: function (element, done) {
+                return $timeout(function () {
+                    done();
+                }, 1000);
+            }
+        };
+    }])
     .run(['editableOptions', function (editableOptions) {
         editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
     }]);

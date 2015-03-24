@@ -10,6 +10,7 @@ var clean = require('gulp-clean');
 var inject = require('gulp-inject');
 var concat = require('gulp-concat');
 var rename = require('gulp-rename');
+var runSequence = require('run-sequence');
 
 var injectFiles = {
     bowerCss: [
@@ -20,7 +21,7 @@ var injectFiles = {
     bowerJs: [
         'bower_components/jquery/dist/jquery.min.js',
         'bower_components/firebase/firebase.js',
-        'bower_components/angular/angular.js',
+        'bower_components/angular/angular.min.js',
         'bower_components/angularfire/dist/angularfire.min.js',
         'bower_components/angular-route/angular-route.min.js',
         'bower_components/angular-animate/angular-animate.min.js',
@@ -31,6 +32,9 @@ var injectFiles = {
         'bower_components/bootstrap/dist/js/bootstrap.min.js',
         'bower_components/angular-bootstrap-checkbox/angular-bootstrap-checkbox.js',
         'bower_components/lodash/lodash.min.js'
+    ],
+    misc: [
+        'bower_components/bootstrap/dist/fonts/**'
     ],
     all: function () {
         return this.bowerCss.concat(this.bowerJs);
@@ -45,26 +49,26 @@ gulp.task('lint', function () {
         .pipe(jshint.reporter('fail'));
 });
 gulp.task('clean', function () {
-    gulp.src('./dist/*')
+    gulp.src('dist/*')
         .pipe(clean({force: true}));
 });
 gulp.task('minify-css', function () {
     var opts = {comments: true, spare: true};
-    gulp.src(['./app/**/*.css'])
+    gulp.src(['app/**/*.css'])
         .pipe(concat('app.css'))
         .pipe(minifyCSS(opts))
         .pipe(rename('app.min.css'))
-        .pipe(gulp.dest('./dist/'))
+        .pipe(gulp.dest('dist/'))
 });
 gulp.task('copy-html-files', function () {
-    gulp.src('./app/**/*.html')
+    gulp.src('app/**/*.html')
         .pipe(gulp.dest('dist/'));
 });
 gulp.task('copy-bower-files', function () {
     var bowerSources = injectFiles.all();
     bowerSources.push('bower_components/bootstrap/dist/fonts/**');
     gulp.src(bowerSources, {base: './'})
-        .pipe(gulp.dest('./dist/'))
+        .pipe(gulp.dest('dist/'))
 });
 gulp.task('minify-js', function () {
     gulp.src(['./app/**/*.js'])
@@ -74,17 +78,37 @@ gulp.task('minify-js', function () {
             //outSourceMap: "app.js.map"
         }))
         .pipe(rename('app.min.js'))
-        .pipe(gulp.dest('./dist/'))
+        .pipe(gulp.dest('dist/'))
 });
-gulp.task('inject', ['copy-html-files', 'copy-bower-files', 'minify-css', 'minify-js'], function () {
-    var target = gulp.src('./dist/index.html');
+gulp.task('copy-dev-js', function () {
+    gulp.src(['app/**/*.js'])
+        .pipe(concat('app.js'))
+        .pipe(gulp.dest('dist/'))
+});
+gulp.task('copy-dev-css', function () {
+    gulp.src(['app/**/*.css'])
+        .pipe(concat('app.css'))
+        .pipe(gulp.dest('dist/'))
+});
+gulp.task('inject-dev', function () {
+    var target = gulp.src('dist/index.html');
+    var bowerSources = injectFiles.all();
+    var appSources = ['dist/app.css', 'dist/app.js'];
+    var allSources = bowerSources.concat(appSources);
+    var sources = gulp.src(allSources);
+    return target
+        .pipe(inject(sources, {ignorePath: 'dist/'}))
+        .pipe(gulp.dest('dist/'));
+});
+gulp.task('inject-prod', function () {
+    var target = gulp.src('dist/index.html');
     var bowerSources = injectFiles.all();
     var appSources = ['dist/app.min.css', 'dist/app.min.js'];
     var allSources = bowerSources.concat(appSources);
     var sources = gulp.src(allSources);
     return target
         .pipe(inject(sources, {ignorePath: 'dist/'}))
-        .pipe(gulp.dest('./dist/'));
+        .pipe(gulp.dest('dist/'));
 });
 gulp.task('serve', function () {
     connect.server({
@@ -98,6 +122,24 @@ gulp.task('default',
     ['build', 'serve']
 );
 // build task
-gulp.task('build',
-    ['lint', 'inject']
-);
+gulp.task('build-dev', function (cb) {
+    runSequence([
+        'lint',
+        'copy-html-files',
+        'copy-bower-files',
+        'copy-dev-css',
+        'copy-dev-js',
+        'inject-dev'
+    ], cb);
+});
+// build task
+gulp.task('build-prod', function (cb) {
+    runSequence([
+        'lint',
+        'copy-html-files',
+        'copy-bower-files',
+        'minify-css',
+        'minify-js',
+        'inject-prod'
+    ], cb);
+});

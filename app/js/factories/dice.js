@@ -49,6 +49,7 @@ angular.module('pokerOnDices.dice', [])
                 for (var key in this) {
                     if (!this.hasOwnProperty(key)) continue;
                     if (angular.isFunction(this[key])) continue;
+                    if (key === 'isRotating') continue;
                     res[key] = this[key];
                 }
                 return res;

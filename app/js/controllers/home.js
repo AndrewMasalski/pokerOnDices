@@ -82,7 +82,8 @@ angular.module('pokerOnDices.app')
                                 return pl.getTotal();
                             }).reverse();
                             var gamePlayers = _.reduce(ordered, function (sum, current) {
-                                return sum + (sum.length === 0 ? '' : ', ') + current.name;
+                                var pl = new Player(current);
+                                return sum + (sum.length === 0 ? '' : ', ') + pl.name + ' ('+ pl.getTotal() +')';
                             }, '');
                             //console.log(game);
                             var encodedId = $base64.encode(game.$id);
