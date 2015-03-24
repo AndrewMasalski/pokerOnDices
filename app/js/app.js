@@ -34,6 +34,17 @@ angular.module('pokerOnDices.app',
             }
         };
     }])
+    .directive("version", function () {
+        return {
+            restrict: "E",
+            replace: true,
+            scope: {
+                appVersion: "="
+            },
+            template:
+                '<small class="pull-right">v0.0.3</small>'
+        };
+    })
     .run(['editableOptions', function (editableOptions) {
         editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
     }]);
