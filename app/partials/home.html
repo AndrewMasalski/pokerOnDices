@@ -23,6 +23,7 @@
                     <input class="input-lg" placeholder="новый игрок" ng-model="home.newPlayer"
                            ng-disabled="home.isSaving"
                            typeahead="name as player.name for player in home.getPlayers() | filter:$viewValue | limitTo:5">
+                    <input class="btn btn-default" type="submit" id="submit" value="Добавить" />
                 </form>
             </div>
         </div>
