@@ -44,8 +44,8 @@ angular.module('pokerOnDices.app')
                         }
                     }
                 }).result.then(function () {
-                    $location.path('#/');
-                });
+                        $location.path('#/');
+                    });
             };
 
             var decodedGameId;
@@ -167,17 +167,13 @@ angular.module('pokerOnDices.app')
 
 
 angular.module('pokerOnDices.app')
-    .controller('ModalInstanceCtrl', function ($scope, $modalInstance, items) {
+    .controller('ModalInstanceCtrl', ['$scope', '$modalInstance', 'items',
+        function ($scope, $modalInstance, items) {
+            $scope.items = _.sortBy(items, function (item) {
+                return item.getTotal();
+            }).reverse();
 
-        $scope.items = _.sortBy(items, function (item) {
-            return item.getTotal();
-        }).reverse();
-
-        $scope.ok = function () {
-            $modalInstance.close();
-        };
-
-        //$scope.cancel = function () {
-        //    $modalInstance.dismiss('cancel');
-        //};
-    });
+            $scope.ok = function () {
+                $modalInstance.close();
+            };
+        }]);
