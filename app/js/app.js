@@ -42,7 +42,7 @@ angular.module('pokerOnDices.app',
                 appVersion: "="
             },
             template:
-                '<small class="pull-right">v0.0.4</small>'
+                '<small class="pull-right">v0.0.5</small>'
         };
     })
     .run(['editableOptions', function (editableOptions) {

@@ -75,4 +75,23 @@
             </tr>
         </table>
     </div>
+    <script type="text/ng-template" id="modal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Победа!!!</h3>
+        </div>
+        <div class="modal-body">
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="player in items track by $index">
+                    <div>
+                        <h4>{{$index + 1}}. {{player.name}}
+                            <span class="badge pull-right">{{player.getTotal()}}</span>
+                        </h4>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">Начать новую</button>
+        </div>
+    </script>
 </div>

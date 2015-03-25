@@ -4,8 +4,9 @@
 
 angular.module('pokerOnDices.app')
     .controller('MainController',
-    ['$q', '$rootScope', '$timeout', '$location', '$routeParams', '$firebaseObject', '$base64', 'PokerOnDicesAuth', 'GameLogic',
-        function ($q, $rootScope, $timeout, $location, $routeParams, $firebaseObject, $base64, PokerOnDicesAuth, GameLogic) {
+    ['$q', '$rootScope', '$timeout', '$location', '$routeParams', '$firebaseObject', '$base64', 'PokerOnDicesAuth', 'GameLogic', '$modal',
+        function ($q, $rootScope, $timeout, $location, $routeParams, $firebaseObject, $base64, PokerOnDicesAuth, GameLogic, $modal) {
+            $rootScope.AILoading = true;
             this.isError = false;
             this.game = GameLogic;
             this.game.dices.length = 0;
@@ -31,8 +32,22 @@ angular.module('pokerOnDices.app')
                     }, 3000);
                 }
             };
+            var onGameDone = function () {
+                $modal.open({
+                    templateUrl: 'modal.html',
+                    controller: 'ModalInstanceCtrl',
+                    backdrop: 'static',
+                    size: 'sm',
+                    resolve: {
+                        items: function () {
+                            return self.game.players;
+                        }
+                    }
+                }).result.then(function () {
+                    $location.path('#/');
+                });
+            };
 
-            $rootScope.AILoading = true;
             var decodedGameId;
             try {
                 decodedGameId = $base64.decode($routeParams.gameId);
@@ -48,6 +63,9 @@ angular.module('pokerOnDices.app')
                     var gameData = arr[decodedGameId];
                     if (!!gameData) {
                         self.game.start(gameData);
+                        if (self.game.done === true) {
+                            onGameDone();
+                        }
                         done();
                     } else {
                         console.error('game not found: redirecting');
@@ -139,7 +157,27 @@ angular.module('pokerOnDices.app')
                 _.forEach(self.game.players, function (player) {
                     gamesFb[decodedGameId].players[player.id] = player.toDb();
                 });
-                return gamesFb.$save();
+                return gamesFb.$save().then(function () {
+                    if (self.game.done === true) {
+                        onGameDone();
+                    }
+                });
             }
         }]);
 
+
+angular.module('pokerOnDices.app')
+    .controller('ModalInstanceCtrl', function ($scope, $modalInstance, items) {
+
+        $scope.items = _.sortBy(items, function (item) {
+            return item.getTotal();
+        }).reverse();
+
+        $scope.ok = function () {
+            $modalInstance.close();
+        };
+
+        //$scope.cancel = function () {
+        //    $modalInstance.dismiss('cancel');
+        //};
+    });
