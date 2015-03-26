@@ -1,15 +1,15 @@
 [rotate-flip] {
-    -webkit-transition:transform ease 1s;
-    -moz-transition:transform ease 1s;
-    -o-transition:transform ease 1s;
-    -ms-transition:transform ease 1s;
-    transition:transform ease 1s;
+    -webkit-transition: 1000ms ease all;
+    -moz-transition: 1000ms ease all;
+    -o-transition: 1000ms ease all;
+    -ms-transition: 1000ms ease all;
+    transition: 1000ms ease all;
 }
 
 [rotate-flip].rotated {
-    -webkit-transform:rotate(1800deg);
-    -moz-transform:rotate(1800deg);
-    -o-transform:rotate(1800deg);
-    -ms-transform:rotate(1800deg);
-    transform:rotate(1800deg);
+    -webkit-transform: rotate(1800deg);
+    -moz-transform: rotate(1800deg);
+    -o-transform: rotate(1800deg);
+    -ms-transform: rotate(1800deg);
+    transform: rotate(1800deg);
 }
