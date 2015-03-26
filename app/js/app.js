@@ -23,17 +23,6 @@ angular.module('pokerOnDices.app',
                 redirectTo: '/'
             });
     }])
-    .animation('.rotate-flip', ['$timeout', function ($timeout) {
-        return {
-            setup: function (element) {
-            },
-            start: function (element, done) {
-                return $timeout(function () {
-                    done();
-                }, 1000);
-            }
-        };
-    }])
     .directive("version", function () {
         return {
             restrict: "E",
@@ -42,7 +31,7 @@ angular.module('pokerOnDices.app',
                 appVersion: "="
             },
             template:
-                '<small class="pull-right">v0.0.5</small>'
+                '<small class="pull-right">v0.0.6</small>'
         };
     })
     .run(['editableOptions', function (editableOptions) {

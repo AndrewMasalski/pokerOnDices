@@ -167,8 +167,8 @@ angular.module('pokerOnDices.app')
 
 
 angular.module('pokerOnDices.app')
-    .controller('ModalInstanceCtrl', ['$scope', '$modalInstance', 'items',
-        function ($scope, $modalInstance, items) {
+    .controller('ModalInstanceCtrl', ['$rootScope', '$scope', '$modalInstance', 'items',
+        function ($rootScope, $scope, $modalInstance, items) {
             $scope.items = _.sortBy(items, function (item) {
                 return item.getTotal();
             }).reverse();
@@ -176,4 +176,8 @@ angular.module('pokerOnDices.app')
             $scope.ok = function () {
                 $modalInstance.close();
             };
+
+            $rootScope.$on('$locationChangeStart', function (event) {
+                $modalInstance.dismiss('cancel');
+            });
         }]);
