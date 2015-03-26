@@ -1,9 +1,9 @@
 [rotate-flip] {
-    -webkit-transition: 1000ms ease all;
-    -moz-transition: 1000ms ease all;
-    -o-transition: 1000ms ease all;
-    -ms-transition: 1000ms ease all;
-    transition: 1000ms ease all;
+    -webkit-transition: -webkit-transform 1000ms ease;
+    -moz-transition: -mox-transform 1000ms ease;
+    -o-transition: -o-transform 1000ms ease;
+    -ms-transition: -ms-transform 1000ms ease;
+    transition: transform 1000ms ease;
 }
 
 [rotate-flip].rotated {
