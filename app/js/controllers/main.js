@@ -8,6 +8,7 @@ angular.module('pokerOnDices.app')
         function ($q, $rootScope, $timeout, $location, $routeParams, $firebaseObject, $base64, PokerOnDicesAuth, GameLogic, $modal) {
             $rootScope.AILoading = true;
             this.isError = false;
+            this.err = null;
             this.game = GameLogic;
             this.game.dices.length = 0;
 
@@ -148,9 +149,17 @@ angular.module('pokerOnDices.app')
                 saveGameState().then(rollingDone, rollingDone);
             };
 
+            this.undo = function () {
+                rollDisabled = true;
+                this.game.undo();
+                saveGameState().then(rollingDone, rollingDone);
+            };
+
             function saveGameState() {
                 gamesFb[decodedGameId].isFirstRoll = false;
                 gamesFb[decodedGameId].isDone = self.game.done;
+                gamesFb[decodedGameId].prev = self.game.getPrevious();
+                gamesFb[decodedGameId].players = {};
                 gamesFb[decodedGameId].dices = _.map(self.getDices(), function (dice) {
                     return dice.toDb();
                 });

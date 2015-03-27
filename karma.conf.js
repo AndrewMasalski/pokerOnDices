@@ -15,9 +15,9 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'app/bower_components/lodash/lodash.js',
-            'app/bower_components/angular/angular.js',
-            'app/bower_components/angular-mocks/angular-mocks.js',
+            'bower_components/lodash/lodash.js',
+            'bower_components/angular/angular.js',
+            'bower_components/angular-mocks/angular-mocks.js',
             'app/js/factories/player.js',
             'app/js/factories/dice.js',
             'app/js/services/combinations.js',

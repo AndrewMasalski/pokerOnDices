@@ -3,6 +3,7 @@
 
 angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices.player', 'pokerOnDices.dice'])
     .service('GameLogic', ['$q', '$timeout', 'Combinations', 'Player', 'Dice', function ($q, $timeout, Combinations, Player, Dice) {
+        var previousState = null;
         this.currentPlayer = null;
         this.players = [];
         this.dices = [];
@@ -40,9 +41,13 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
         };
 
         this.start = function (gameData) {
-            this.players.length = 0;
             var self = this;
+            this.players.length = 0;
             this.dices.length = 0;
+            this.currentPlayer = null;
+            if (!!gameData.prev) {
+                previousState = gameData.prev;
+            }
             this.done = gameData.isDone;
             if (!!gameData.dices && gameData.dices.length > 0) {
                 this.dices = gameData.dices.map(function (diceData) {
@@ -67,11 +72,11 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
                 this.currentPlayer = firstPlayer;
             }
             this.updatePossibleResults();
-            this.isGameCompleted();
         };
 
         this.makeRoll = function (delay) {
             var self = this;
+            previousState = null;
             self.isRollEnabled = false;
             var notLockedDices = _.filter(self.dices, {isLocked: false});
             _.forEach(notLockedDices, function (elem, index) {
@@ -116,16 +121,19 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
         };
 
         this.pickResult = function (index) {
+            previousState = this.getState();
             this.currentPlayer.setResult(index);
             this.setNextPlayer();
         };
 
         this.crossOut = function (index) {
+            previousState = this.getState();
             this.currentPlayer.results[index] = 0;
             this.setNextPlayer();
         };
 
         this.pickSchoolResult = function (index) {
+            previousState = this.getState();
             this.currentPlayer.setSchoolResult(index);
             this.setNextPlayer();
         };
@@ -160,6 +168,34 @@ angular.module('pokerOnDices.logic', ['pokerOnDices.combinations', 'pokerOnDices
                 this.currentPlayer.isCurrent = false;
                 this.currentPlayer = null;
             }
+        };
+
+        this.isUndoEnabled = function () {
+            return previousState !== null;
+        };
+
+        this.getState = function() {
+            var state = {};
+            state.isDone = this.done;
+            state.dices = this.dices.map(function (dice) {
+                return dice.toDb();
+            });
+            state.players = {};
+            for (var i = 0; i < this.players.length; i++) {
+                var player = this.players[i];
+                state.players[player.id] = player.toDb();
+            }
+            return state;
+        };
+
+        this.getPrevious = function () {
+            return previousState;
+        };
+
+        this.undo = function () {
+            if (previousState === null) { return; }
+            this.start(previousState);
+            previousState = null;
         };
 
     }]);

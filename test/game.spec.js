@@ -8,7 +8,7 @@ describe('game', function () {
         inject(function (_$timeout_, GameLogic, Player) {
             $timeout = _$timeout_;
             game = GameLogic;
-            game.start({players: [new Player('me', 1), new Player('!me', 2)]});
+            game.start({players: [new Player({name: 'me', id: 1}), new Player({name: '!me', id: 2})]});
         });
     });
 
@@ -156,5 +156,54 @@ describe('game', function () {
         expect(game.players[0].getTotal()).toBe(15);
         expect(game.players[1].getTotal()).toBe(14);
     });
+
+    var compareWithState = function (state1, state2) {
+        expect(state2.isDone).toBe(state1.isDone);
+        // check dices
+        expect(state2.dices.length).toBe(state1.dices.length);
+        var getDiceValue = function (sum, cur) {
+            return sum + cur.value;
+        };
+        var stateDices = _.reduce(state2.dices, getDiceValue, '');
+        var gameDices = _.reduce(state1.dices, getDiceValue, '');
+        expect(stateDices).toBe(gameDices);
+        // check players
+        var getPlayerValue = function (sum, cur) {
+            var getResult = function (allRes, curRes) {
+                return allRes + curRes;
+            };
+            var results = _.reduce(cur.results, getResult, '');
+            var reduce = _.reduce(cur.schoolResults, getResult, '');
+            return cur.isCurrent + sum + results + reduce;
+        };
+        var statePlayers = _.reduce(state2.players, getPlayerValue, '');
+        var gamePlayers = _.reduce(state1.players, getPlayerValue, '');
+        expect(statePlayers).toBe(gamePlayers);
+    };
+
+    it('game.getState()', function () {
+        game.players[0].schoolResults = [1, 1, 1, 1, 1, 1];
+        game.players[0].results = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+        var state = game.getState();
+        compareWithState(game, state);
+    });
+
+    it('game.isUndoEnabled()', function (done) {
+        game.pickResult(0);
+        expect(game.isUndoEnabled()).toBeTruthy();
+        game.makeRoll().then(function () {
+            expect(game.isUndoEnabled()).toBeFalsy();
+        }).finally(done);
+        $timeout.flush(1000);
+    });
+
+    it('game.undo()', function () {
+        game.pickResult(0);
+        var beforeState = game.getPrevious();
+        expect(beforeState.players[1].results.length).toBe(0);
+        game.undo();
+        compareWithState(beforeState, game);
+    });
+
 
 });

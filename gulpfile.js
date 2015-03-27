@@ -22,7 +22,8 @@ var injectFiles = {
         'bower_components/jquery/dist/jquery.min.js',
         'bower_components/firebase/firebase.js',
         'bower_components/angular/angular.min.js',
-        'bower_components/angularfire/dist/angularfire.min.js',
+        'bower_components/angular-bindonce/bindonce.min.js',
+        'bower_components/angularfire/dist/angularfire.js',
         'bower_components/angular-route/angular-route.min.js',
         'bower_components/angular-animate/angular-animate.min.js',
         'bower_components/angular-xeditable/dist/js/xeditable.min.js',
@@ -43,35 +44,35 @@ var injectFiles = {
 
 // tasks
 gulp.task('lint', function () {
-    gulp.src(['./app/**/*.js'])
+    return gulp.src(['./app/**/*.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
         .pipe(jshint.reporter('fail'));
 });
 gulp.task('clean', function () {
-    gulp.src('dist/*')
+    return gulp.src('dist/*')
         .pipe(clean({force: true}));
 });
 gulp.task('minify-css', function () {
     var opts = {comments: true, spare: true};
-    gulp.src(['app/**/*.css'])
+    return gulp.src(['app/**/*.css'])
         .pipe(concat('app.css'))
         .pipe(minifyCSS(opts))
         .pipe(rename('app.min.css'))
         .pipe(gulp.dest('dist/'))
 });
 gulp.task('copy-html-files', function () {
-    gulp.src('app/**/*.html')
+    return gulp.src('app/**/*.html')
         .pipe(gulp.dest('dist/'));
 });
 gulp.task('copy-bower-files', function () {
     var bowerSources = injectFiles.all();
     bowerSources.push('bower_components/bootstrap/dist/fonts/**');
-    gulp.src(bowerSources, {base: './'})
+    return gulp.src(bowerSources, {base: './'})
         .pipe(gulp.dest('dist/'))
 });
 gulp.task('minify-js', function () {
-    gulp.src(['./app/**/*.js'])
+    return gulp.src(['./app/**/*.js'])
         .pipe(concat('app.js'))
         .pipe(uglify({
             //inSourceMap:
@@ -81,12 +82,12 @@ gulp.task('minify-js', function () {
         .pipe(gulp.dest('dist/'))
 });
 gulp.task('copy-dev-js', function () {
-    gulp.src(['app/**/*.js'])
+    return gulp.src(['app/**/*.js'])
         .pipe(concat('app.js'))
         .pipe(gulp.dest('dist/'))
 });
 gulp.task('copy-dev-css', function () {
-    gulp.src(['app/**/*.css'])
+    return gulp.src(['app/**/*.css'])
         .pipe(concat('app.css'))
         .pipe(gulp.dest('dist/'))
 });
@@ -111,35 +112,32 @@ gulp.task('inject-prod', function () {
         .pipe(gulp.dest('dist/'));
 });
 gulp.task('serve', function () {
-    connect.server({
+    return connect.server({
         root: 'dist/',
         port: 8000
     });
 });
 
 // default task
-gulp.task('default',
-    ['build', 'serve']
-);
-// build task
-gulp.task('build-dev', function (cb) {
-    runSequence([
-        'lint',
-        'copy-html-files',
-        'copy-bower-files',
-        'copy-dev-css',
-        'copy-dev-js',
-        'inject-dev'
-    ], cb);
+gulp.task('default', ['serve']);
+
+// copy files
+gulp.task('common', ['lint', 'copy-html-files', 'copy-bower-files']);
+
+// build-dev task
+gulp.task('build-dev', ['clean'], function (cb) {
+    runSequence(
+        ['common', 'copy-dev-css', 'copy-dev-js'],
+        'inject-dev',
+        cb
+    );
 });
-// build task
+
+// build-prod task
 gulp.task('build-prod', function (cb) {
-    runSequence([
-        'lint',
-        'copy-html-files',
-        'copy-bower-files',
-        'minify-css',
-        'minify-js',
-        'inject-prod'
-    ], cb);
+    runSequence(
+        ['common', 'minify-css', 'minify-js'],
+        'inject-prod',
+        cb
+    );
 });

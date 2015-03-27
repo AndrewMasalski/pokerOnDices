@@ -20,7 +20,8 @@ angular.module('pokerOnDices.dice', [])
                 if (this.isLocked) {
                     return;
                 }
-                this.value = Math.round(Math.random() * 5) + 1;
+                this.value = _.random(1, 6);
+                //this.value = Math.round(Math.random() * 5) + 1;
                 switch (this.value) {
                     case 1:
                         this.num = 'one';

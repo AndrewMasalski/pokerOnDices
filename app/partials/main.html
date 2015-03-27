@@ -19,8 +19,8 @@
             </div>
         </div>
         <div class="col-xs-2 col-sm-2 col-md-2">
-            <button type="button" class="btn btn-warning btn-lg pull-right" ng-disabled="true" ng-click="main.setDices()">
-                Set dices
+            <button type="button" class="btn btn-warning btn-lg pull-right" ng-disabled="!main.game.isUndoEnabled()" ng-click="main.undo()">
+                Отменить
             </button>
         </div>
     </div>
@@ -29,7 +29,7 @@
             <thead>
             <tr>
                 <th>Комбинация</th>
-                <th ng-repeat="player in main.game.players" class="{{player.isCurrent ? 'shadowTop' : ''}}">
+                <th bindonce ng-repeat="player in main.game.players" ng-class="{'shadowTop': player.isCurrent}">
                     {{player.name}}
                 </th>
             </tr>

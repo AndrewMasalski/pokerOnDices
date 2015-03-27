@@ -16,12 +16,8 @@ angular.module('pokerOnDices.player', [])
                 this.name = data;
             } else if (angular.isObject(data)) {
                 angular.extend(this, data);
-                if (angular.isObject(this.schoolResults)) {
-                    this.schoolResults = objectToArray(this.schoolResults);
-                }
-                if (angular.isObject(this.results)) {
-                    this.results = objectToArray(this.results);
-                }
+                this.schoolResults = objectToArray(this.schoolResults);
+                this.results = objectToArray(this.results);
             }
 
             this.isFirstRoll = function () {
